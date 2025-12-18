@@ -3,6 +3,9 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# new directories
+*.streamlit/
+
 # C extensions
 *.so
 
