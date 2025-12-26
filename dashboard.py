@@ -2,7 +2,6 @@ import streamlit as st
 
 def render():
     st.write(st.user)
+    # st.write(type(st.user))
 
-    if st.button("🚪 Logout"):
-        st.logout()
-
+# Made a seperated Logout option.
