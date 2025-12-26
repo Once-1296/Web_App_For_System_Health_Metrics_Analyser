@@ -5,4 +5,3 @@ def render():
 
     if st.button("Login"):
         st.login("google")
-
