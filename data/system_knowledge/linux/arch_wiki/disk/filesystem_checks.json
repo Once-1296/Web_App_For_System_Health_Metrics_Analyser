@@ -1,0 +1,36 @@
+{
+  "id": "arch_filesystem_checks",
+  "title": "Filesystem Consistency Checks",
+  "source": {
+    "name": "Arch Wiki",
+    "url": "https://wiki.archlinux.org/title/Fsck"
+  },
+  "os": "linux",
+  "distro": "arch",
+  "category": "disk",
+  "confidence": "high",
+  "tags": ["filesystem", "fsck", "disk"],
+  "content": {
+    "symptoms": [
+      "Filesystem errors on boot",
+      "Read-only filesystem"
+    ],
+    "causes": [
+      "Improper shutdown",
+      "Disk corruption"
+    ],
+    "diagnosis": [
+      "Check kernel logs",
+      "Run filesystem check"
+    ],
+    "solutions": [
+      "Run fsck on unmounted filesystem",
+      "Repair detected errors"
+    ],
+    "commands": [
+      "fsck /dev/sdXN",
+      "mount | grep ro"
+    ],
+    "notes": "Never run fsck on a mounted filesystem."
+  }
+}

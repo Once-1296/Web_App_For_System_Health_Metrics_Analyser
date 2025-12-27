@@ -1,0 +1,36 @@
+{
+  "id": "arch_power_management",
+  "title": "Power Management on Laptops",
+  "source": {
+    "name": "Arch Wiki",
+    "url": "https://wiki.archlinux.org/title/Power_management"
+  },
+  "os": "linux",
+  "distro": "arch",
+  "category": "battery",
+  "confidence": "high",
+  "tags": ["power", "battery", "laptop"],
+  "content": {
+    "symptoms": [
+      "Poor battery life",
+      "High power consumption at idle"
+    ],
+    "causes": [
+      "Missing power management tools",
+      "Misconfigured kernel settings"
+    ],
+    "diagnosis": [
+      "Measure power consumption",
+      "Check active power states"
+    ],
+    "solutions": [
+      "Install power management utilities",
+      "Enable CPU power saving"
+    ],
+    "commands": [
+      "powertop",
+      "tlp-stat"
+    ],
+    "notes": "Power tuning is hardware-specific."
+  }
+}

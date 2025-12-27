@@ -22,13 +22,20 @@ def render():
         if not user_input:
             return
 
+        # store user message
         st.session_state.past.append(user_input)
+        
+        from rag_app import answer_query
 
-        response = model.invoke(user_input)
+        # 🔥 RAG call instead of model.invoke
+        try:
+            answer = answer_query(user_input)
+        except Exception as e:
+            answer = f"RAG error: {e}"
 
         st.session_state.generated.append({
-            "type": "normal",
-            "data": response.content
+            "type": "rag",
+            "data": answer
         })
 
         st.session_state.user_input = ""

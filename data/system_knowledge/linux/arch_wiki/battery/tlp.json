@@ -1,0 +1,36 @@
+{
+  "id": "arch_tlp",
+  "title": "TLP Power Management Tool",
+  "source": {
+    "name": "Arch Wiki",
+    "url": "https://wiki.archlinux.org/title/TLP"
+  },
+  "os": "linux",
+  "distro": "arch",
+  "category": "battery",
+  "confidence": "high",
+  "tags": ["tlp", "power", "battery"],
+  "content": {
+    "symptoms": [
+      "High battery drain",
+      "No dynamic power tuning"
+    ],
+    "causes": [
+      "TLP not installed or enabled"
+    ],
+    "diagnosis": [
+      "Check TLP status",
+      "Review applied power settings"
+    ],
+    "solutions": [
+      "Install TLP",
+      "Enable and start TLP service"
+    ],
+    "commands": [
+      "pacman -S tlp",
+      "systemctl enable tlp --now",
+      "tlp-stat"
+    ],
+    "notes": "TLP works out of the box for most laptops."
+  }
+}
