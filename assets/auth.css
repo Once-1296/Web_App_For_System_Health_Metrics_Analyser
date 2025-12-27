@@ -1,0 +1,124 @@
+/* ==============================
+   GLOBAL RESET
+============================== */
+html, body, [class*="css"] {
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #000000;
+    background-color: #f8fafc;
+}
+
+/* ==============================
+   MAIN CONTAINER
+============================== */
+.main {
+    padding: 1.5rem 2rem;
+}
+
+/* ==============================
+   AUTH PAGE STYLING
+============================== */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+
+.auth-card {
+    background: #ffffff;
+    padding: 2.5rem 3rem;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.auth-title {
+    font-size: 1.9rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: #000000;
+}
+
+.auth-subtitle {
+    font-size: 0.95rem;
+    color: #1f2937;
+    margin-bottom: 1.8rem;
+}
+
+/* ==============================
+   BUTTONS
+============================== */
+div.stButton > button {
+    width: 100%;
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #000000;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    transition: all 0.2s ease-in-out;
+}
+
+div.stButton > button:hover {
+    background-color: #f1f5f9;
+    border-color: #9ca3af;
+}
+
+/* ==============================
+   SIDEBAR
+============================== */
+section[data-testid="stSidebar"] {
+    background-color: #ffffff;
+    border-right: 1px solid #e5e7eb;
+}
+
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3,
+section[data-testid="stSidebar"] p {
+    color: #000000;
+}
+
+/* ==============================
+   CHAT STYLING
+============================== */
+.chat-container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.chat-user {
+    background-color: #e0f2fe;
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    margin: 0.5rem 0;
+    align-self: flex-end;
+}
+
+.chat-bot {
+    background-color: #f3f4f6;
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    margin: 0.5rem 0;
+    align-self: flex-start;
+}
+
+/* ==============================
+   INPUTS
+============================== */
+input, textarea {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* ==============================
+   FOOTER / MISC
+============================== */
+hr {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 1.5rem 0;
+}
