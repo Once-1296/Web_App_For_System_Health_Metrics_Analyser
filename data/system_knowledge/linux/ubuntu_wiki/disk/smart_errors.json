@@ -1,0 +1,39 @@
+{
+  "id": "ubuntu_disk_smart_errors",
+  "title": "Disk SMART Errors",
+  "source": {
+    "name": "Ubuntu Documentation",
+    "url": "https://help.ubuntu.com/community/Smartmontools"
+  },
+  "os": "linux",
+  "distro": "ubuntu",
+  "category": "disk",
+  "confidence": "high",
+  "tags": ["disk", "smart", "storage", "failure"],
+  "content": {
+    "symptoms": [
+      "Disk read or write errors",
+      "System freezes or hangs",
+      "SMART health warnings"
+    ],
+    "causes": [
+      "Failing or reallocated disk sectors",
+      "Aging or worn storage hardware",
+      "Loose or faulty SATA/NVMe connections"
+    ],
+    "diagnosis": [
+      "Run a SMART health status check",
+      "Inspect reallocated and pending sector counts"
+    ],
+    "solutions": [
+      "Back up important data immediately",
+      "Replace the failing disk",
+      "Verify SATA or NVMe cable and slot connections"
+    ],
+    "commands": [
+      "smartctl -a /dev/sdX",
+      "smartctl -H /dev/sdX"
+    ],
+    "notes": "On Ubuntu, SMART monitoring is commonly provided by the smartmontools package and may integrate with system notifications. SMART errors usually indicate imminent hardware failure."
+  }
+}

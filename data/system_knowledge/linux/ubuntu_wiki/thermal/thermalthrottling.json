@@ -1,0 +1,39 @@
+{
+  "id": "ubuntu_thermal_throttling",
+  "title": "CPU Thermal Throttling",
+  "source": {
+    "name": "Ubuntu Community Help",
+    "url": "https://help.ubuntu.com/community/PowerManagement"
+  },
+  "os": "linux",
+  "distro": "ubuntu",
+  "category": "thermal",
+  "confidence": "high",
+  "tags": ["thermal", "cpu", "overheating", "performance"],
+  "content": {
+    "symptoms": [
+      "Sudden CPU frequency drops",
+      "Performance degradation during heavy workloads",
+      "High CPU temperatures"
+    ],
+    "causes": [
+      "Insufficient cooling",
+      "Dust buildup",
+      "Degraded thermal paste"
+    ],
+    "diagnosis": [
+      "Monitor CPU and system temperatures",
+      "Inspect kernel logs for thermal throttling events"
+    ],
+    "solutions": [
+      "Clean the cooling system",
+      "Replace old thermal paste",
+      "Improve system airflow and ventilation"
+    ],
+    "commands": [
+      "sensors",
+      "dmesg | grep -i thermal"
+    ],
+    "notes": "Thermal throttling is a protective hardware mechanism and is common on laptops under sustained load."
+  }
+}

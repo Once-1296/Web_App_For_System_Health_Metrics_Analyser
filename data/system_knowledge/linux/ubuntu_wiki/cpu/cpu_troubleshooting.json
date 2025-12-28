@@ -1,0 +1,38 @@
+{
+  "id": "ubuntu_cpu_troubleshooting",
+  "title": "CPU Performance Troubleshooting",
+  "source": {
+    "name": "Ubuntu Documentation",
+    "url": "https://help.ubuntu.com"
+  },
+  "os": "linux",
+  "distro": "ubuntu",
+  "category": "cpu",
+  "confidence": "high",
+  "tags": ["cpu", "performance", "troubleshooting"],
+  "content": {
+    "symptoms": [
+      "System feels slow",
+      "High CPU usage at idle"
+    ],
+    "causes": [
+      "Background services consuming CPU",
+      "Incorrect power management or power profile settings"
+    ],
+    "diagnosis": [
+      "Identify CPU-intensive processes",
+      "Check CPU frequency and power profile behavior"
+    ],
+    "solutions": [
+      "Disable unnecessary startup or background services",
+      "Adjust CPU governor or power profile",
+      "Investigate and stop runaway processes"
+    ],
+    "commands": [
+      "top",
+      "htop",
+      "ps aux --sort=-%cpu"
+    ],
+    "notes": "Ubuntu systems may manage CPU performance using power-profiles-daemon. Always identify the offending process before applying system-wide changes."
+  }
+}

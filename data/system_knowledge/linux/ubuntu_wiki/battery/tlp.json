@@ -1,0 +1,36 @@
+{
+  "id": "ubuntu_tlp",
+  "title": "TLP Power Management Tool",
+  "source": {
+    "name": "Ubuntu Documentation",
+    "url": "https://help.ubuntu.com"
+  },
+  "os": "linux",
+  "distro": "ubuntu",
+  "category": "battery",
+  "confidence": "high",
+  "tags": ["tlp", "power", "battery"],
+  "content": {
+    "symptoms": [
+      "High battery drain",
+      "No dynamic power tuning"
+    ],
+    "causes": [
+      "TLP not installed or enabled"
+    ],
+    "diagnosis": [
+      "Check TLP service status",
+      "Review applied power settings"
+    ],
+    "solutions": [
+      "Install TLP",
+      "Enable and start the TLP service"
+    ],
+    "commands": [
+      "sudo apt install tlp",
+      "sudo systemctl enable tlp --now",
+      "tlp-stat"
+    ],
+    "notes": "On Ubuntu, TLP is not installed by default. Newer Ubuntu versions use power-profiles-daemon by default, and running both simultaneously is not recommended."
+  }
+}
