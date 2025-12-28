@@ -6,7 +6,7 @@ DATA_DIR = Path("data")
 SYSTEM_CORPUS_DIR = DATA_DIR / "system_knowledge"
 LINUX_DIR = SYSTEM_CORPUS_DIR / "linux"
 ARCH_WIKI_DIR = LINUX_DIR / "arch_wiki" 
-UBUNTU_WIKI_DIR = Path("data/ubuntu")
+UBUNTU_WIKI_DIR = LINUX_DIR / "ubuntu_wiki"
 CHROMA_DIR = Path("chroma_db/main_corpus")
 
 # Models
