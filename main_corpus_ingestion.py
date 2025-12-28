@@ -10,6 +10,7 @@ from langchain_chroma import Chroma
 from rag_config import (
     ARCH_WIKI_DIR,
     CHROMA_DIR,
+    UBUNTU_WIKI_DIR,
     WINDOWS_DOCS_DIR,
     EMBED_MODEL,
     CHUNK_SIZE,
@@ -123,6 +124,9 @@ def ingest():
 
     print("📥 Loading Ubuntu docs...")
     docs.extend(load_ubuntu_wiki_docs())
+
+    print("📥 Loading Windows docs...")
+    docs.extend(load_windows_docs())
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
