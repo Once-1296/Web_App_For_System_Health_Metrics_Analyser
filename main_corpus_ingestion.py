@@ -9,13 +9,45 @@ from langchain_chroma import Chroma
 
 from rag_config import (
     ARCH_WIKI_DIR,
-    UBUNTU_WIKI_DIR,
     CHROMA_DIR,
+    WINDOWS_DOCS_DIR,
     EMBED_MODEL,
     CHUNK_SIZE,
     CHUNK_OVERLAP,
 )
 
+
+def load_windows_docs():
+    documents = []
+    for domain_dir in WINDOWS_DOCS_DIR.iterdir():
+        if not domain_dir.is_dir():
+            continue
+
+        domain = domain_dir.name
+
+        for file in domain_dir.glob("*.json"):
+            topic = file.stem
+
+            with open(file, "r", encoding="utf-8") as f:
+                content = json.load(f)
+
+            text = json.dumps(content, indent=2, ensure_ascii=False)
+
+            documents.append(
+                Document(
+                    page_content=text,
+                    metadata={
+                        "source": "windows_docs",
+                        "domain": domain,
+                        "topic": topic,
+                        "os": "windows",
+                        "distro": "10/11",
+                        "path": str(file),
+                    },
+                )
+            )
+
+    return documents
 
 def load_arch_wiki_docs():
     documents = []
