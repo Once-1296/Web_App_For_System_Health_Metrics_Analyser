@@ -1,0 +1,43 @@
+{
+  "id": "windows_battery_health",
+  "title": "Laptop Battery Health (Windows)",
+  "source": {
+    "name": "Microsoft Support",
+    "url": "https://support.microsoft.com/en-us/windows"
+  },
+  "os": "windows",
+  "distro": "10/11",
+  "category": "battery",
+  "confidence": "high",
+  "tags": ["battery", "power", "laptop", "powercfg"],
+  "content": {
+    "symptoms": [
+      "Reduced battery life",
+      "Unexpected shutdowns",
+      "Plugged in, not charging",
+      "System slows down on battery power"
+    ],
+    "causes": [
+      "Battery cycle wear",
+      "Corrupt battery drivers",
+      "High background app usage",
+      "Misconfigured power plan"
+    ],
+    "diagnosis": [
+      "Generate Battery Report",
+      "Check Battery usage by app in Settings"
+    ],
+    "solutions": [
+      "Run Power Troubleshooter",
+      "Update or reinstall Microsoft ACPI-Compliant Control Method Battery driver",
+      "Calibrate battery",
+      "Adjust Power & Sleep settings"
+    ],
+    "commands": [
+      "powercfg /batteryreport /output \"C:\\battery-report.html\"",
+      "powercfg /energy",
+      "WMIC Path Win32_Battery Get EstimatedChargeRemaining, FullChargeCapacity"
+    ],
+    "notes": "The 'powercfg /batteryreport' command generates an HTML file containing detailed cycle count and capacity history."
+  }
+}
