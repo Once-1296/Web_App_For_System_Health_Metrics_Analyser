@@ -1,5 +1,4 @@
 from supabase import create_client
-from supabase.lib.client_options import ClientOptions  # type: ignore
 from supabase import Client
 import json
 from typing import List, Tuple, Optional, Dict, Any
@@ -12,13 +11,19 @@ from config import OllamaConfig
 def _get_supabase_client() -> Client:
     if not url or not key:
         raise RuntimeError("Supabase credentials missing in supabase_config.py")
-    return create_client(url, key, options=ClientOptions())
+    return create_client(url, key)
 
 def _latest_saved_for(email: str) -> Optional[Dict[str, Any]]:
     sb = _get_supabase_client()
     resp = sb.table("all_chats").select("*").eq("email", email).order("chat_id", desc=True).limit(1).execute()
-    if resp.error:
+    if resp is None:
         return None
+    try:
+        if resp.error:
+            print(f"Error message: {resp.error.message}")
+            return None
+    except Exception:
+        pass
     data = resp.data or []
     return data[0] if data else None
 
@@ -26,9 +31,9 @@ def save_chat(
     email: str,
     user_messages: List[str],
     llm_responses: List[str],
-    title: Optional[str] = None,
-    metadata: Optional[Dict[str, Any]] = None,
-    summary: Optional[str] = None,
+    title: Optional[str] = "",
+    metadata: Optional[Dict[str, Any]] = "",
+    summary: Optional[str] = "",
 ) -> Optional[Dict[str, Any]]:
     """
     Save chat to Supabase table `all_chats`.
@@ -40,9 +45,10 @@ def save_chat(
         return None
 
     sb = _get_supabase_client()
-
+    print("error 1")
     # Check latest saved and skip duplicates
     latest = _latest_saved_for(email)
+    # print(latest==None)
     if latest:
         try:
             latest_user = latest.get("user_messages") or []
@@ -50,9 +56,10 @@ def save_chat(
             if list(latest_user) == list(user_messages) and list(latest_llm) == list(llm_responses):
                 # no changes
                 return None
-        except Exception:
+        except Exception as e:
+            print(f"error: {e}")
             pass
-
+    print("error 2")
     title = title or (user_messages[0][:120] if user_messages else f"chat-{datetime.utcnow().isoformat()}")
 
     payload = {
@@ -64,19 +71,23 @@ def save_chat(
         "metadata": metadata or {},
     }
 
-    resp = sb.table("all_chats").insert(payload).select("*").execute()
-    if resp.error:
-        # caller may log; return None
-        return None
+    resp = sb.table("all_chats").insert(payload).execute()
+    print("error 3")
+    try:
+        if resp.error:
+            print(f"Error message: {resp.error.message}")
+            return None
+    except Exception:
+        pass
     inserted = resp.data[0] if resp.data else None
-
+    print("error 4")
     # optional mapping into user_chat_nums if you need it
     try:
         if inserted and inserted.get("chat_id"):
             sb.table("user_chat_nums").insert({"chat_id": inserted["chat_id"], "email": email}).execute()
     except Exception:
         pass
-
+    print(inserted)
     return inserted
 
 def summarize_and_meta(messages: List[str], model_name: Optional[str] = None) -> Tuple[Optional[str], Dict[str, Any]]:
