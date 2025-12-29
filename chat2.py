@@ -56,7 +56,7 @@ def render():
 
             # skip saving empty chats (handled in save_chat)
             # produce summary + metadata using a different model (e.g. mistral)
-            summary, metadata = summarize_and_meta(user_messages, model_name="mistral-7b")
+            summary, metadata = summarize_and_meta(user_messages, model_name="mistral")
 
             save_chat(email_val, user_messages, llm_responses, title=None, metadata=metadata, summary=summary)
         except Exception as e:
