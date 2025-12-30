@@ -39,15 +39,6 @@ def get_mock_activity_data():
     return pd.DataFrame({"Date": dates, "Login Count": activity}).set_index("Date")
 
 def render():
-    with st.sidebar:
-        
-        st.divider()
-        
-        # Logout Button (Visual only, logic depends on your auth provider)
-        if st.button("Logout", use_container_width=True): 
-            st.warning("Are you sure you want to logout?")
-            if st.button("Yes, Logout"):
-                st.logout()
 
     # --- Main Content Area ---
     st.title(f"Welcome {st.user["given_name"]}")

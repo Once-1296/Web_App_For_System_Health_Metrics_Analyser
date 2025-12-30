@@ -66,6 +66,12 @@ with st.sidebar:
             },
         }
     )
+    st.divider()
+    # Logout Button (Visual only, logic depends on your auth provider)
+    if st.button("Logout", use_container_width=True): 
+            st.warning("Are you sure you want to logout?")
+            if st.button("Yes, Logout"):
+                st.logout()
 
 # Page Routing
 if selected == "Dashboard":
