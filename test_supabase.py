@@ -1,6 +1,8 @@
 from supabase import create_client
 import json
 
+# Development testing code
+
 SECRETS_PATH = ".streamlit/supabase_secrets.json"
 try:
     with open(SECRETS_PATH, 'r') as file:

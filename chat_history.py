@@ -4,14 +4,24 @@ from streamlit_chat import *
 from streamlit_option_menu import option_menu
 
 def render():
-    titles = [chat["title"] for chat in st.session_state.chat_id.values()]
-    titles = titles[::-1]
-    selected = option_menu(
+    details = [ (chat_id,chat["title"]) for chat_id,chat in st.session_state.chat_id.items()]
+    details = details[::-1]
+    default_index = next(
+        i for i, (cid, _) in enumerate(details)
+        if cid == st.session_state.current_chat_id
+    )
+
+    titles = [title for _, title in details]
+    labels = [
+        f"{title} ⟨{i}⟩"
+        for i, (_, title) in enumerate(details)
+    ]
+    selected_label = option_menu(
         None,
-        titles,
+        labels,
         icons = len(titles)*["chat-dots"],
         orientation="vertical",
-        default_index=0,
+        default_index=default_index,
         styles={
             "container": {
                 "padding": "0!important", 
@@ -32,4 +42,8 @@ def render():
             },
         }
     )
+    selected_index = labels.index(selected_label)
+    selected_chat_id = details[selected_index][0]
+    # print(selected_chat_id)
+    st.session_state.current_chat_id = selected_chat_id
     pass

@@ -2,8 +2,8 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import auth
 import dashboard
-import chat2
-import history
+import chat_frontend as chat
+import chat_history as history
 from chat_backend import load_past_chats
 
 # auth checkup
@@ -11,13 +11,20 @@ if not st.user.is_logged_in:
     auth.render()
     st.stop()
 
+
+
+# Load past chats if new session
+if not "current_chat_id" in st.session_state:
+    load_past_chats(st.user.get("email", ""))
+# print(st.session_state.current_chat_id)
+
 # Here will be a new navigation sidebar 
 #     1. Dashboard, 
 #     2. Chat, 
 #     3. History
 #     4. Logout
-# 
-load_past_chats(st.user.get("email", ""))
+
+
 with st.sidebar:
     col1, col2 = st.columns([1, 3], gap="small")
     
@@ -89,6 +96,7 @@ with st.sidebar:
                 st.session_state.confirm_logout = False # Reset state
                 st.success("Logging out...")
                 st.logout() # Note: st.logout is usually for Streamlit Auth
+                st.rerun()
                 
         with col2:
             if st.button("No", use_container_width=True):
@@ -104,7 +112,8 @@ if selected == "Dashboard":
 elif selected == "Chat":
     # Ensure chat2 module is imported
     # import chat2
-    chat2.render()
+    chat.render()
 
 elif selected == "History":
+    # Show past chats
     history.render()
