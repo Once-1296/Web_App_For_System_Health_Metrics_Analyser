@@ -1,6 +1,6 @@
 from supabase import create_client
 import json
-SECRETS_PATH = "supabase_secrets.json"
+SECRETS_PATH = ".streamlit/supabase_secrets.json"
 try:
     with open(SECRETS_PATH, 'r') as file:
         secrets = json.load(file)

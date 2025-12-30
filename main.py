@@ -3,6 +3,8 @@ from streamlit_option_menu import option_menu
 import auth
 import dashboard
 import chat2
+import history
+from chat_backend import load_past_chats
 
 # auth checkup
 if not st.user.is_logged_in:
@@ -15,6 +17,7 @@ if not st.user.is_logged_in:
 #     3. History
 #     4. Logout
 # 
+load_past_chats(st.user.get("email", ""))
 with st.sidebar:
     col1, col2 = st.columns([1, 3], gap="small")
     
@@ -102,3 +105,6 @@ elif selected == "Chat":
     # Ensure chat2 module is imported
     # import chat2
     chat2.render()
+
+elif selected == "History":
+    history.render()

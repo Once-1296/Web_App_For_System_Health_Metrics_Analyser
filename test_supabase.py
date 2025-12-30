@@ -1,7 +1,7 @@
 from supabase import create_client
 import json
 
-SECRETS_PATH = "supabase_secrets.json"
+SECRETS_PATH = ".streamlit/supabase_secrets.json"
 try:
     with open(SECRETS_PATH, 'r') as file:
         secrets = json.load(file)
@@ -19,9 +19,21 @@ url = secrets["PROJECT_URL"]
 key = secrets["service_role_key"]
 
 sb = create_client(url, key)
-
-resp = sb.table("all_chats").select("*").order("chat_id", desc=True).limit(1).execute()
-if resp is not None:
-    print(resp)
-
+email = "awwab.wadekar@gmail.com"
+resp = (
+    sb.table("user_chat_nums").select("chat_id").eq("email",email).execute()
+)
+# st.session_state.setdefault("chat_id",{})
+try:
+    chat_ids = [entry["chat_id"] for entry in resp.data]
+except Exception as e:
+    chat_ids = []
+for chat_id in chat_ids:
+    chat_resp = (sb.table("all_chats").select("*").eq("email",email).eq("chat_id",chat_id).execute())
+    data,count = chat_resp.data,chat_resp.count
+    # st.session_state.chat_id.update({
+    #     chat_id : 
+    # })
+    print(data)
+    print(type(data[0]))
     

@@ -12,7 +12,7 @@ def on_input_change():
         return
 
     # store user message
-    st.session_state.past.append(user_input)
+    st.session_state.chat_id[st.session_state.current_chat_id].user_messages.append(user_input)
 
     # RAG call
     try:
@@ -20,9 +20,8 @@ def on_input_change():
     except Exception as e:
         answer = f"RAG error: {e}"
 
-    st.session_state.generated.append({
-        "type": "rag",
-        "data": answer
+    st.session_state.chat_id[st.session_state.current_chat_id].llm_responses.append({
+        answer
     })
 
     # Clear the input box after sending
@@ -37,41 +36,48 @@ def on_btn_click():
         else:
             email_val = st.session_state.get("email") or "unknown@example.com"
 
-        user_messages = list(st.session_state.get("past", []))
-        llm_responses = [g.get("data") if isinstance(g, dict) else g for g in st.session_state.get("generated", [])]
+        user_messages = list(st.session_state.chat_id[st.session_state.current_chat_id].get("user_messages", []))
+        llm_responses = list(st.session_state.chat_id[st.session_state.current_chat_id].get("llm_responses", []))
 
         # skip saving empty chats (handled in save_chat)
         # produce summary + metadata using a different model (e.g. mistral)
-        summary, metadata = summarize_and_meta(user_messages, model_name="mistral")
+        # summary, metadata = summarize_and_meta(user_messages, model_name="mistral")
 
-        save_chat(email_val, user_messages, llm_responses, title=None, metadata=metadata, summary=summary)
+        # save_chat(email_val, user_messages, llm_responses, title=None, metadata=metadata, summary=summary)
     except Exception as e:
         st.warning(f"Failed to save chat before clearing: {e}")
 
-    st.session_state.past.clear()
-    st.session_state.generated.clear()
+    st.session_state.current_chat_id = max(st.session_state.chat_id) + 1
+    st.session_state.chat_id.update({
+        st.session_state.current_chat_id : {"user_messages":[],"llm_responses":[],"title":""}
+    })
 
 def render():
     # Initialize session state
-    st.session_state.setdefault("past", [])
-    st.session_state.setdefault("generated", [])
+    if current_chat_id not in st.session_state:
+        st.session_state.setdefault("current_chat_id",1)
+        if not chat_id in st.session_state:
+            st.session_state.setdefault("chat_id",{})
+        st.session_state.chat_id.update({
+            1 :{"user_messages":[],"llm_responses":[],"title":""}
+        })
 
     # 1. Chat Display Area
     chat_placeholder = st.container()
 
     with chat_placeholder:
-        if len(st.session_state.past) == 0:
+        if len(st.session_state.chat_id[st.session_state.current_chat_id].user_messages) == 0:
             st.title("Hi! How can I help you today?", text_alignment='center')
 
-        for i in range(len(st.session_state.generated)):
+        for i in range(len(st.session_state.chat_id[st.session_state.current_chat_id].user_messages)):
             message(
-                st.session_state.past[i],
+                st.session_state.chat_id[st.session_state.current_chat_id].user_messages[i],
                 is_user=True,
                 logo=img1,
                 key=f"{i}_user"
             )
             message(
-                st.session_state.generated[i]["data"],
+                st.session_state.chat_id[st.session_state.current_chat_id].llm_responses[i],
                 key=f"{i}_bot",
                 allow_html=True,
                 logo=img2,

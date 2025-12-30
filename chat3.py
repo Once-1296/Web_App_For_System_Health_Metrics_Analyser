@@ -13,20 +13,6 @@ def _get_supabase_client() -> Client:
         raise RuntimeError("Supabase credentials missing in supabase_config.py")
     return create_client(url, key)
 
-def _latest_saved_for(email: str) -> Optional[Dict[str, Any]]:
-    sb = _get_supabase_client()
-    resp = sb.table("all_chats").select("*").eq("email", email).order("chat_id", desc=True).limit(1).execute()
-    if resp is None:
-        return None
-    try:
-        if resp.error:
-            print(f"Error message: {resp.error.message}")
-            return None
-    except Exception:
-        pass
-    data = resp.data or []
-    return data[0] if data else None
-
 def save_chat(
     email: str,
     user_messages: List[str],
