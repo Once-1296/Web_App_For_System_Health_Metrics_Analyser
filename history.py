@@ -6,4 +6,4 @@ from supabase import Client
 from supabase_config import url, key
 
 def render():
-    
+    pass
