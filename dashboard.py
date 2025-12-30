@@ -59,7 +59,10 @@ def render():
         
         name = summary_data["name"]
         email = summary_data["email"]
-        hd = summary_data["hd"]
+        try:
+            hd = summary_data["hd"]
+        except:
+            hd = "google.com"
 
         st.write("Username: " + name)
         st.write("Email: " + email)

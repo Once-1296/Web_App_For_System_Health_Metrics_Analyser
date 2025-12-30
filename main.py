@@ -68,10 +68,29 @@ with st.sidebar:
     )
     st.divider()
     # Logout Button (Visual only, logic depends on your auth provider)
-    if st.button("Logout", use_container_width=True): 
-            st.warning("Are you sure you want to logout?")
-            if st.button("Yes, Logout"):
-                st.logout()
+    if 'confirm_logout' not in st.session_state:
+        st.session_state.confirm_logout = False
+
+    # 2. The Main Logout Button
+    if st.button("Logout", use_container_width=True):
+        st.session_state.confirm_logout = True
+
+    # 3. If they clicked logout, show the confirmation UI
+    if st.session_state.confirm_logout:
+        st.warning("Are you sure you want to logout?")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if st.button("Yes", use_container_width=True):
+                st.session_state.confirm_logout = False # Reset state
+                st.success("Logging out...")
+                st.logout() # Note: st.logout is usually for Streamlit Auth
+                
+        with col2:
+            if st.button("No", use_container_width=True):
+                st.session_state.confirm_logout = False
+                st.rerun() # Refresh to hide the warning
 
 # Page Routing
 if selected == "Dashboard":
