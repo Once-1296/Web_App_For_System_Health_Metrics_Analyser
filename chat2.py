@@ -43,8 +43,8 @@ def on_btn_click():
         # produce summary + metadata using a different model (e.g. mistral)
         # summary, metadata = summarize_and_meta(user_messages, model_name="mistral")
 
-        save_chat(email_val, user_messages, llm_responses, title=None, metadata=metadata, summary=summary)
-        st.toast("Chat Saved Successfully!")
+        # save_chat(email_val, user_messages, llm_responses, title=None, metadata=metadata, summary=summary)
+        # st.toast("Chat Saved Successfully!")
     except Exception as e:
         st.warning(f"Failed to save chat before clearing: {e}")
 
