@@ -12,7 +12,7 @@ def render():
         if not "chat_id" in st.session_state:
             st.session_state.setdefault("chat_id",{})
         st.session_state.chat_id.update({
-            1 :{"user_messages":[],"llm_responses":[],"title":""}
+            1 :{"user_messages":[],"llm_responses":[],"title":"","summary":""}
         })
 
     # 1. Chat Display Area

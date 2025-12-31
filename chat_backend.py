@@ -33,11 +33,11 @@ def load_past_chats(email:str):
         # print(data)
         # print(type(data[0]))
         st.session_state.chat_id.update({
-            chat_id : {"user_messages":data[0]["user_messages"] , "llm_responses" : data[0]["llm_responses"], "title":data[0]["title"]}
+            chat_id : {"user_messages":data[0]["user_messages"] , "llm_responses" : data[0]["llm_responses"], "title":data[0]["title"],"summary":data[0]["summary"]}
         })
     new_id = max(chat_ids)+1 if len(chat_ids) > 0 else 1
     st.session_state.chat_id.update({
-        new_id : {"user_messages":[],"llm_responses":[],"title":""}
+        new_id : {"user_messages":[],"llm_responses":[],"title":"","summary":""}
     })
     st.session_state.setdefault("current_chat_id",new_id)
 
@@ -57,6 +57,7 @@ def update_chat() -> dict:
         if title is None or summary is None or  not metadata:
             return {"error" : "unable to get summary and metadata"}
         st.session_state.chat_id[st.session_state.current_chat_id]["title"] = title
+        st.session_state.chat_id[st.session_state.current_chat_id]["summary"] = summary
         payload = {
             "chat_id" : chat_id,
             "email" : email,
@@ -104,10 +105,11 @@ def summarize_and_meta(messages: List[str], responses:List[str], model_name: Opt
             temperature=0.0
         )
         prompt = (
-            "You are a concise summarizer. Given the conversation, produce a JSON object with keys:\n"
+            "You are a concise summarizer that can explain the basic flow, points and aims of a user to llm conversation.\n"
+            " Given the conversation, produce a JSON object with keys:\n"
             "  title -> short description of chat\n"
-            "  summary -> 4-5 sentence summary\n"
-            "  tags -> list of short topic tags\n\n"
+            "  summary -> summary whose length is the minimum between half of approximate length of chat and 300 words\n"
+            "  tags -> list of short topic tags. Produce between 2 to 30 tags according to relevancy. \n\n"
             f"Conversation:\n{convo}\n\nRespond ONLY with valid JSON."
         )
         resp = model.invoke(prompt)
@@ -184,7 +186,7 @@ def on_btn_click():
     else:
         st.session_state.current_chat_id = last_id + 1
         st.session_state.chat_id.update({
-            st.session_state.current_chat_id : {"user_messages":[],"llm_responses":[],"title":""}
+            st.session_state.current_chat_id : {"user_messages":[],"llm_responses":[],"title":"","summary":""}
         })
 
     
