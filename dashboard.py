@@ -1,6 +1,132 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+from supabase import create_client, Client
+# Assuming supabase_config is a local file or module you have
+try:
+    from supabase_config import url, key
+except ImportError:
+    st.error("Could not import 'url' and 'key' from 'supabase_config'. Please ensure the file exists.")
+    url = ""
+    key = ""
+
+# --- SUPABASE CONNECTION ---
+@st.cache_resource
+def init_supabase() -> Client:
+    """Initialize Supabase client with error handling."""
+    try:
+        return create_client(url, key)
+    except Exception as e:
+        st.error(f"Failed to initialize Supabase client: {e}")
+        return None
+
+# --- REPORT FETCHING FUNCTIONS ---
+
+def get_report_options(user_email, supabase):
+    """Fetches UUIDs for the user and maps them to Report N labels."""
+    try:
+        # Fetch IDs for the specific user
+        response = supabase.table("user_system_reports")\
+            .select("id")\
+            .eq("user_email", user_email)\
+            .execute()
+        
+        data = response.data
+        if not data:
+            return {}
+
+        # Create dictionary mapping "Report X" -> UUID
+        report_map = {}
+        for index, item in enumerate(data):
+            label = f"Report {index + 1}"
+            report_map[label] = item['id']
+            
+        return report_map
+
+    except Exception as e:
+        st.error(f"Error fetching report list: {e}")
+        return {}
+
+def fetch_report_content(report_id, supabase):
+    """Fetches summary and conclusions for a specific report ID."""
+    try:
+        response = supabase.table("user_system_reports")\
+            .select("summary, conclusions")\
+            .eq("id", report_id)\
+            .execute()
+        
+        if not response.data:
+            return None, "Report not found."
+
+        record = response.data[0]
+        summary = record.get('summary', '') or ""
+        conclusions = record.get('conclusions', '') or ""
+
+        # Check if both are empty
+        if not summary.strip() and not conclusions.strip():
+            return None, "Both Summary and Conclusions are empty for this report."
+
+        # Format the text file content
+        file_content = f"summary:\n{summary}\n\nconclusions:\n{conclusions}\n"
+        return file_content, None
+
+    except Exception as e:
+        return None, f"Database error: {e}"
+
+# --- UI COMPONENT: MODAL ---
+
+@st.dialog("Download System Reports")
+def open_download_modal(user_email):
+    supabase = init_supabase()
+    
+    if not supabase:
+        st.error("Database connection failed.")
+        if st.button("Close"):
+            st.rerun()
+        return
+
+    # 1. Fetch Options
+    with st.spinner("Fetching available reports..."):
+        report_map = get_report_options(user_email, supabase)
+
+    if not report_map:
+        st.warning("No system reports found for this user.")
+        if st.button("Close"):
+            st.rerun()
+        return
+
+    # 2. Select Option
+    selected_label = st.selectbox("Select a Report", list(report_map.keys()))
+    selected_uuid = report_map[selected_label]
+
+    st.markdown("---")
+    
+    col1, col2 = st.columns([1, 1])
+
+    # 3. Action Buttons
+    with col1:
+        if st.button("Cancel", use_container_width=True):
+            st.rerun()
+
+    with col2:
+        # We use a standard button to trigger the fetch logic
+        # If fetch is successful, we show the download button
+        if st.button("Prepare Download", type="primary", use_container_width=True):
+            content, error = fetch_report_content(selected_uuid, supabase)
+            
+            if error:
+                st.error(error)
+            else:
+                # Provide the actual download button now that content is ready
+                st.download_button(
+                    label="⬇️ Click to Download .txt",
+                    data=content,
+                    file_name=f"{selected_label.replace(' ', '_')}_System_Report.txt",
+                    mime="text/plain",
+                    use_container_width=True
+                )
+                st.success("File ready for download!")
+
 
 # --- 1. Mock Data Setup (For testing independently) ---
 # In your actual app, this comes from your auth system.
@@ -78,6 +204,22 @@ def render():
             file_name='user_profile.csv',
             mime='text/csv',
         )
+        # --- MAIN BUTTON IMPLEMENTATION ---
+
+        # Place this snippet where you want the button in your code
+        if st.button("Download System Reports"):
+            # Mocking user email retrieval as per instruction (st.user isn't standard, usually st.experimental_user or custom auth)
+            # Replace this line with your actual auth logic
+            try:
+                # Example for Streamlit Community Cloud auth, or replace with your custom auth variable
+                user_email = st.user.get("email")
+            except:
+                user_email = "test@example.com" # Fallback for testing
+            
+            if user_email:
+                open_download_modal(user_email)
+            else:
+                st.error("User email not found. Please log in.")
 
     with tab2:
         st.subheader("Weekly Activity")

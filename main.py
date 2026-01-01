@@ -5,6 +5,7 @@ import dashboard
 import chat_frontend as chat
 import chat_history as history
 from chat_backend import load_past_chats
+import loc_app_doc
 
 # auth checkup
 if not st.user.is_logged_in:
@@ -52,8 +53,8 @@ with st.sidebar:
     # --- 3. Menu ---
     selected = option_menu(
         None,
-        ["Dashboard", "Chat", "History"],
-        icons=["speedometer2", "chat-dots", "clock-history"], # Removed extra icon to match list length
+        ["Dashboard", "Chat", "History","Local App Guide"],
+        icons=["speedometer2", "chat-dots", "clock-history","download"], # Removed extra icon to match list length
         orientation="vertical",
         default_index=0,
         styles={
@@ -117,3 +118,6 @@ elif selected == "Chat":
 elif selected == "History":
     # Show past chats
     history.render()
+
+elif selected == "Local App Guide":
+    loc_app_doc.render()
