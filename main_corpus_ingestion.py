@@ -4,7 +4,6 @@ from pathlib import Path
 
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 
 from rag_config import (
@@ -12,7 +11,7 @@ from rag_config import (
     CHROMA_DIR,
     UBUNTU_WIKI_DIR,
     WINDOWS_DOCS_DIR,
-    EMBED_MODEL,
+    embeddings,
     CHUNK_SIZE,
     CHUNK_OVERLAP,
 )
@@ -137,8 +136,6 @@ def ingest():
     splits = splitter.split_documents(docs)
 
     print(f"✂️ Total chunks: {len(splits)}")
-
-    embeddings = OllamaEmbeddings(model=EMBED_MODEL)
 
     vectorstore = Chroma(
         collection_name="main_corpus",

@@ -5,9 +5,9 @@ from datetime import datetime
 from supabase import create_client
 from supabase import Client
 from supabase_config import url, key
-from langchain_ollama import ChatOllama
+from langchain_groq import ChatGroq
 from rag_app import answer_query
-from config import OllamaConfig
+from rag_config import SUMMARY_MODEL, GROQ_API_KEY
 
 def _get_supabase_client() -> Client:
     if not url or not key:
@@ -78,64 +78,81 @@ def update_chat() -> dict:
         return {"error" : e}
 
 
-def summarize_and_meta(messages: List[str], responses:List[str], model_name: Optional[str] = None) -> Tuple[Optional[str],Optional[str], Dict[str, Any]]:
+def summarize_and_meta(
+    messages: List[str], 
+    responses: List[str], 
+    model_name: Optional[str] = None
+) -> Tuple[Optional[str], Optional[str], Dict[str, Any]]:
     """
-    Produce a short summary and lightweight metadata for the conversation.
-    Uses an Ollama chat model (you can pass a mistral model name).
-    Returns (summary_text, metadata_dict).
+    Produce a short summary and lightweight metadata for the conversation using Groq.
     """
     if not messages or not responses:
-        return None,None, {}
+        return None, None, {}
+    
     if len(messages) != len(responses):
         return None, None, {}
-    model_name = model_name or "mistral"  # override if needed
+
+    # Default to the lightweight config model if none provided
+    target_model = model_name or SUMMARY_MODEL
+    
     fallback_title = (
-        messages[0][:120]
-        if messages[0]
+        messages[0][:50] + "..." if len(messages[0]) > 50 
         else f"chat-{datetime.utcnow().isoformat()}"
     )
-    convo = "\n\n" + "\n\n".join(
-        f"User : {m}\nLLM: {r}"
+
+    # Format conversation history
+    convo = "\n\n".join(
+        f"User: {m}\nAI: {r}"
         for m, r in zip(messages, responses)
-    ) + "\n\n"
+    )
+
     try:
-        model = ChatOllama(
-            model=model_name,
-            base_url=OllamaConfig.BASE_URL,
-            temperature=0.0
+        # Initialize Groq Chat Model
+        llm = ChatGroq(
+            model=target_model,
+            api_key=GROQ_API_KEY,
+            temperature=0.0  # Keep 0 for consistent JSON
         )
+
+        # Updated Prompt: Optimized for Llama 3 to enforce JSON
         prompt = (
-            "You are a concise summarizer that can explain the basic flow, points and aims of a user to llm conversation.\n"
-            " Given the conversation, produce a JSON object with keys:\n"
-            "  title -> short description of chat\n"
-            "  summary -> summary whose length is the minimum between half of approximate length of chat and 300 words\n"
-            "  tags -> list of short topic tags. Produce between 2 to 30 tags according to relevancy. \n\n"
-            f"Conversation:\n{convo}\n\nRespond ONLY with valid JSON."
+            "System: You are a JSON-only API. You must strictly output valid JSON. No preambles. No markdown blocks.\n"
+            "Task: Analyze the following conversation and return a JSON object.\n"
+            "Requirements:\n"
+            "1. 'title': A short, descriptive title (max 10 words).\n"
+            "2. 'summary': A concise summary of the key points.(max 500 words)\n"
+            "3. 'tags': A list of 2-10 topic tags.\n\n"
+            f"Conversation:\n{convo}\n\n"
+            "Output JSON:"
         )
-        resp = model.invoke(prompt)
-        content = getattr(resp, "content", resp)
-        # try parse as JSON
-        parsed = {}
-        try:
-            parsed = json.loads(content)
 
-            summary = parsed.get("summary") if isinstance(parsed, dict) else content
+        # Invoke model
+        resp = llm.invoke(prompt)
+        content = getattr(resp, "content", str(resp))
 
-            if isinstance(parsed, dict):
-                title = parsed.get("title", fallback_title)
-            else:
-                title = fallback_title
-            
-            tags = parsed.get("tags") if isinstance(parsed, dict) else []
+        # --- Cleaning Llama 3 Output ---
+        # Sometimes models wrap JSON in ```json ... ```. We clean that.
+        cleaned_content = content.replace("```json", "").replace("```", "").strip()
 
-            metadata = {"tags": tags, "generated_by": model_name}
-            return title, summary, metadata
-        except Exception:
-            # fallback: use raw model output as summary
-            return fallback_title,content.strip(), {"generated_by": model_name}
-    except Exception:
-        # last-resort lightweight summary
-        return fallback_title, convo[:400], {"generated_by": "fallback", "length": len(messages)}
+        # Parse JSON
+        parsed = json.loads(cleaned_content)
+        
+        # Extract fields safely
+        title = parsed.get("title", fallback_title)
+        summary = parsed.get("summary", "Summary unavailable")
+        tags = parsed.get("tags", [])
+
+        metadata = {"tags": tags, "generated_by": target_model}
+        return title, summary, metadata
+
+    except json.JSONDecodeError:
+        # Fallback: If JSON parsing fails, treat the whole content as the summary
+        return fallback_title, content[:500], {"error": "json_parse_fail", "generated_by": target_model}
+        
+    except Exception as e:
+        # Final fallback: If Groq API fails entirely
+        print(f"Summarization failed: {e}")
+        return fallback_title, convo[:200] + "...", {"error": str(e), "generated_by": "fallback"}
 
 
 def on_input_change():
@@ -146,22 +163,22 @@ def on_input_change():
         return
 
     # store user message
-    st.session_state.chat_id[st.session_state.current_chat_id]["user_messages"].append(user_input)
     # print(user_input)
     # RAG call
     try:
         answer = answer_query(user_input)
     except Exception as e:
         answer = f"RAG error: {e}"
-    
+    st.session_state.chat_id[st.session_state.current_chat_id]["user_messages"].append(user_input)
     st.session_state.chat_id[st.session_state.current_chat_id]["llm_responses"].append(answer)
     response = update_chat()
-    # if "error" in response:
-    #     print(f"error : {response["error"]}")
-    # elif "warning" in response:
-    #     print(f"warning : {response["warning"]}")
-    # else:
-    #     print(f"Success !")
+    if "error" in response:
+        print(f"error : {response["error"]}")
+    elif "warning" in response:
+        print(f"warning : {response["warning"]}")
+    else:
+        pass
+        print(f"Success !")
     # Clear the input box after sending
     st.session_state.user_input = ""
 

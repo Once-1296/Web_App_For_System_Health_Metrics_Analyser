@@ -5,9 +5,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 from head_query import gather_context
-from rag_config import CHAT_MODEL
+from rag_config import llm
 
-llm = OllamaLLM(model=CHAT_MODEL)
 
 PROMPT = ChatPromptTemplate.from_template(
     """
