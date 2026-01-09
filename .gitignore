@@ -5,6 +5,7 @@ __pycache__/
 
 # new directories
 *.streamlit/
+tmp.py
 
 # C extensions
 *.so

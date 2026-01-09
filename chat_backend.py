@@ -40,6 +40,15 @@ def load_past_chats(email:str):
         new_id : {"user_messages":[],"llm_responses":[],"title":"","summary":""}
     })
     st.session_state.setdefault("current_chat_id",new_id)
+    # system report count
+    st.session_state.setdefault("report_times",[])
+    report_timings = (
+        sb.table("user_system_reports").select("created_at").eq("user_email",email).execute()
+    )
+    try:
+        st.session_state.report_times = [entry["created_at"] for entry in report_timings.data]
+    except Exception as e:
+        st.session_state.report_times = []
 
 
 def update_chat() -> dict:

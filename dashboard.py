@@ -155,14 +155,81 @@ def change_theme():
             st.rerun()
 
 def get_user_dataframe():
-    df = pd.DataFrame.from_dict(st.user, orient='index', columns=['User Details'])
+    """Converts st.user dictionary into a pandas DataFrame for display."""
+    dict_of_user = {}
+    dict_of_user.update({
+        "email": st.user["email"],
+        "name": st.user["name"],
+        "given_name": st.user["given_name"],
+        "family_name": st.user["family_name"],
+        "picture": st.user["picture"]
+    })
+    try:
+        dict_of_user["no_of_chats"] = len(st.session_state.chat_id)
+        if len(st.session_state.chat_id[len(st.session_state.chat_id)]["user_messages"])==0:
+            dict_of_user["no_of_chats"]-=1
+    except Exception as e:
+        dict_of_user["no_of_chats"] = 0
+    try:
+        dict_of_user["no_of_reports"] = len(st.session_state.report_times)
+    except Exception as e:
+        dict_of_user["no_of_reports"] = 0
+    df = pd.DataFrame.from_dict(dict_of_user, orient='index', columns=['User Details'])
     return df
 
 def get_mock_activity_data():
-    """Generates mock data to simulate user activity logs."""
-    dates = pd.date_range(end=pd.Timestamp.now(), periods=7).strftime("%Y-%m-%d")
-    activity = np.random.randint(1, 10, size=7)
-    return pd.DataFrame({"Date": dates, "Login Count": activity}).set_index("Date")
+    """Generates mock data to simulate user activity logs for plotting.
+
+    Expects st.session_state.report_times to be a list/iterable of ISO timestamps like:
+    "2026-01-01T11:49:59.016415+00:00"
+
+    Returns a pandas.DataFrame indexed by dates (last 7 days) with a single column 'logins'
+    suitable for st.bar_chart.
+    """
+    try:
+        user_report_times = st.session_state.report_times
+        # print(user_report_times)
+    except Exception as e:
+        # print(e)
+        user_report_times = []
+
+    # If no timestamps available, return a 7-day zero/ random sample so chart shows something
+    if not user_report_times:
+        # print("No report times found in session state.")
+        dates = pd.date_range(end=pd.Timestamp.utcnow().normalize(), periods=7)
+        counts = np.random.randint(0, 6, size=len(dates))
+        df = pd.DataFrame({"reports": counts}, index=dates)
+        df.index.name = "date"
+        return df
+
+    try:
+        # Parse timestamps robustly into UTC datetimes
+        ts = pd.to_datetime(pd.Series(list(user_report_times)), utc=True, errors="coerce")
+        ts = ts.dropna()
+        if ts.empty:
+            raise ValueError("No valid timestamps after parsing.")
+
+        # Aggregate counts per calendar day (UTC)
+        day_counts = ts.dt.date.value_counts().sort_index()
+
+        # Convert date index back to datetime index for plotting and align to last 7 days
+        day_index = pd.to_datetime(day_counts.index)
+        df = pd.DataFrame({"reports": day_counts.values}, index=day_index)
+
+        # Ensure last 7 days are present (fill missing days with 0)
+        # last_7 = pd.date_range(end=pd.Timestamp.utcnow().normalize(), periods=7)
+        # df = df.reindex(last_7, fill_value=0)
+        # df.index.name = "date"
+        # print(df)
+        return df
+
+    except Exception as e:
+        st.warning(f"Could not parse activity timestamps: {e}")
+        dates = pd.date_range(end=pd.Timestamp.utcnow().normalize(), periods=7)
+        df = pd.DataFrame({"reports": np.zeros(len(dates), dtype=int)}, index=dates)
+        df.index.name = "date"
+        return df
+
 
 def render():
 
@@ -222,18 +289,41 @@ def render():
                 st.error("User email not found. Please log in.")
 
     with tab2:
-        st.subheader("Weekly Activity")
-        st.write("Here is a summary of your logins this week.")
+        st.subheader("App Activity")
+        st.write("Here is a summary of your activity this week.")
         
         chart_data = get_mock_activity_data()
+        # print(chart_data)
         
         # Interactive Bar Chart
         st.bar_chart(chart_data)
         
         # Metrics Row
         col1, col2, col3 = st.columns(3)
-        col1.metric("Total Logins", "24", "+2")
-        col2.metric("Active Projects", "3", "1 New")
+        try:
+            num_of_chats = len(st.session_state.chat_id) 
+            sign = "+1" if len(st.session_state.chat_id[num_of_chats]["user_messages"])==0 else "+0"
+            # print(len(st.session_state.chat_id[num_of_chats]["user_messages"]))
+            col1.metric("Total chats", num_of_chats,sign)
+            num_of_reports = len(st.session_state.report_times)
+            # count all reports whose time is within the last 7 days
+            try:
+                rpt_times = pd.to_datetime(
+                    pd.Series(list(st.session_state.report_times)),
+                    utc=True,
+                    errors="coerce"
+                ).dropna()
+                one_week_ago = pd.Timestamp.utcnow().tz_convert("UTC") - pd.Timedelta(days=7)
+                count_new = int((rpt_times >= one_week_ago).sum())
+            except Exception as e:
+                # print(e)
+                count_new = 0
+            col2.metric("Active Reports", num_of_reports, f"{count_new} Last 7 Days")
+
+        except Exception as e:
+            # print(e)
+            col1.metric("Total chats", "24", "+2")
+            col2.metric("Active Reports", "3", "1 New")
         col3.metric("System Status", "Healthy")
 
     with tab3:
