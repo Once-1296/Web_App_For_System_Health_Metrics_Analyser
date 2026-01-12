@@ -234,7 +234,7 @@ def get_mock_activity_data():
 def render():
 
     # --- Main Content Area ---
-    st.title(f"Welcome {st.user["given_name"]}")
+    st.title(f"Welcome {st.user['given_name']}! 👋")
     
     # Use Tabs to organize information
     tab1, tab2, tab3 = st.tabs(["👤 Profile Info", "📊 Activity Analytics", "⚙️ Settings"])

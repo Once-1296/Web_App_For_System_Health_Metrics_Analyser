@@ -1,6 +1,6 @@
 # To revoke the history part.
 import streamlit as st
-from streamlit_chat import *
+from streamlit_chat import message
 from streamlit_option_menu import option_menu
 
 def render():
@@ -46,4 +46,6 @@ def render():
     selected_chat_id = details[selected_index][0]
     # print(selected_chat_id)
     st.session_state.current_chat_id = selected_chat_id
-    pass
+
+if __name__ == "__main__":
+    render()

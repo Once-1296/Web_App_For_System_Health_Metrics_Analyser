@@ -182,9 +182,9 @@ def on_input_change():
     st.session_state.chat_id[st.session_state.current_chat_id]["llm_responses"].append(answer)
     response = update_chat()
     if "error" in response:
-        print(f"error : {response["error"]}")
+        print(f"error : {response['error']}")
     elif "warning" in response:
-        print(f"warning : {response["warning"]}")
+        print(f"warning : {response['warning']}")
     else:
         pass
         print(f"Success !")
