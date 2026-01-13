@@ -1,6 +1,6 @@
 # main_corpus_retrieval.py
 from langchain_chroma import Chroma
-from rag_config import CHROMA_DIR, embeddings as _embeddings, TOP_K
+from src.Utils.rag_config import CHROMA_DIR, embeddings as _embeddings, TOP_K
 
 _vectorstore = Chroma(
     collection_name="main_corpus",

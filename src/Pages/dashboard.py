@@ -2,9 +2,12 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from supabase import create_client, Client
+import src.Pages.logout as logout
+import extra_streamlit_components as stx
+
 # Assuming supabase_config is a local file or module you have
 try:
-    from supabase_config import url, key
+    from src.Utils.supabase_config import url, key
 except ImportError:
     st.error("Could not import 'url' and 'key' from 'supabase_config'. Please ensure the file exists.")
     url = ""
@@ -236,104 +239,114 @@ def render():
     # --- Main Content Area ---
     st.title(f"Welcome {st.user['given_name']}! 👋")
     
-    # Use Tabs to organize information
-    tab1, tab2, tab3 = st.tabs(["👤 Profile Info", "📊 Activity Analytics", "⚙️ Settings"])
+    # with stx
+    chosen_id = stx.tab_bar(data=[
+            stx.TabBarItemData(id=1, title="Profile", description="User Profile Info"),
+            stx.TabBarItemData(id=2, title="Activity", description="User Activity Analysis"),
+            stx.TabBarItemData(id=3, title="Settings", description="System Settings"),
+        ], default=1)
 
-    with tab1:
-        st.subheader("Personal Information")
-        
-        df_profile = get_user_dataframe()
-        
-        selected_parameters = ['name', 'email', 'hd']
-        #df_few = df_profile[selected_parameters]
-        summary_data = {k: st.user[k] for k in selected_parameters if k in st.user}
-    
-        summary_df = pd.DataFrame.from_dict(summary_data, orient='index', columns=['Value'])
-        
-        name = summary_data["name"]
-        email = summary_data["email"]
-        try:
-            hd = summary_data["hd"]
-        except:
-            hd = "google.com"
-
-        st.write("Username: " + name)
-        st.write("Email: " + email)
-        st.write("Workspace: " + hd)
-        #st.table(df_profile)
-        #st.table(df_few)
-        
-        # Feature: Download Data
-        csv = df_profile.to_csv().encode('utf-8')
-        st.download_button(
-            label="Download Profile Report",
-            data=csv,
-            file_name='user_profile.csv',
-            mime='text/csv',
-        )
-        # --- MAIN BUTTON IMPLEMENTATION ---
-
-        # Place this snippet where you want the button in your code
-        if st.button("Download System Reports"):
-            # Mocking user email retrieval as per instruction (st.user isn't standard, usually st.experimental_user or custom auth)
-            # Replace this line with your actual auth logic
-            try:
-                # Example for Streamlit Community Cloud auth, or replace with your custom auth variable
-                user_email = st.user.get("email")
-            except:
-                user_email = "test@example.com" # Fallback for testing
+    with st.container(
+        border=True
+    ):
+        if chosen_id == "1":
+            st.subheader("Personal Information")
+            df_profile = get_user_dataframe()
             
-            if user_email:
-                open_download_modal(user_email)
-            else:
-                st.error("User email not found. Please log in.")
-
-    with tab2:
-        st.subheader("App Activity")
-        st.write("Here is a summary of your activity this week.")
+            selected_parameters = ['name', 'email', 'hd']
+            #df_few = df_profile[selected_parameters]
+            summary_data = {k: st.user[k] for k in selected_parameters if k in st.user}
         
-        chart_data = get_mock_activity_data()
-        # print(chart_data)
-        
-        # Interactive Bar Chart
-        st.bar_chart(chart_data)
-        
-        # Metrics Row
-        col1, col2, col3 = st.columns(3)
-        try:
-            num_of_chats = len(st.session_state.chat_id) 
-            sign = "+1" if len(st.session_state.chat_id[num_of_chats]["user_messages"])==0 else "+0"
-            # print(len(st.session_state.chat_id[num_of_chats]["user_messages"]))
-            col1.metric("Total chats", num_of_chats,sign)
-            num_of_reports = len(st.session_state.report_times)
-            # count all reports whose time is within the last 7 days
+            summary_df = pd.DataFrame.from_dict(summary_data, orient='index', columns=['Value'])
+            
+            name = summary_data["name"]
+            email = summary_data["email"]
             try:
-                rpt_times = pd.to_datetime(
-                    pd.Series(list(st.session_state.report_times)),
-                    utc=True,
-                    errors="coerce"
-                ).dropna()
-                one_week_ago = pd.Timestamp.utcnow().tz_convert("UTC") - pd.Timedelta(days=7)
-                count_new = int((rpt_times >= one_week_ago).sum())
+                hd = summary_data["hd"]
+            except:
+                hd = "google.com"
+
+            st.write("Username: " + name)
+            st.write("Email: " + email)
+            st.write("Workspace: " + hd)
+            #st.table(df_profile)
+            #st.table(df_few)
+            
+            # Feature: Download Data
+            csv = df_profile.to_csv().encode('utf-8')
+            st.download_button(
+                label="Download Profile Report",
+                data=csv,
+                file_name='user_profile.csv',
+                mime='text/csv',
+            )
+            # --- MAIN BUTTON IMPLEMENTATION ---
+
+            # Place this snippet where you want the button in your code
+            if st.button("Download System Reports"):
+                # Mocking user email retrieval as per instruction (st.user isn't standard, usually st.experimental_user or custom auth)
+                # Replace this line with your actual auth logic
+                try:
+                    # Example for Streamlit Community Cloud auth, or replace with your custom auth variable
+                    user_email = st.user.get("email")
+                except:
+                    user_email = "test@example.com" # Fallback for testing
+                
+                if user_email:
+                    open_download_modal(user_email)
+                else:
+                    st.error("User email not found. Please log in.")
+
+        if chosen_id == "2":
+            st.subheader("App Activity")
+            st.write("Here is a summary of your activity this week.")
+            
+            chart_data = get_mock_activity_data()
+            # print(chart_data)
+            
+            # Interactive Bar Chart
+            st.bar_chart(chart_data)
+            
+            # Metrics Row
+            col1, col2, col3 = st.columns(3)
+            try:
+                num_of_chats = len(st.session_state.chat_id) 
+                sign = "+1" if len(st.session_state.chat_id[num_of_chats]["user_messages"])==0 else "+0"
+                # print(len(st.session_state.chat_id[num_of_chats]["user_messages"]))
+                col1.metric("Total chats", num_of_chats,sign)
+                num_of_reports = len(st.session_state.report_times)
+                # count all reports whose time is within the last 7 days
+                try:
+                    rpt_times = pd.to_datetime(
+                        pd.Series(list(st.session_state.report_times)),
+                        utc=True,
+                        errors="coerce"
+                    ).dropna()
+                    one_week_ago = pd.Timestamp.utcnow().tz_convert("UTC") - pd.Timedelta(days=7)
+                    count_new = int((rpt_times >= one_week_ago).sum())
+                except Exception as e:
+                    # print(e)
+                    count_new = 0
+                col2.metric("Active Reports", num_of_reports, f"{count_new} Last 7 Days")
+
             except Exception as e:
                 # print(e)
-                count_new = 0
-            col2.metric("Active Reports", num_of_reports, f"{count_new} Last 7 Days")
+                col1.metric("Total chats", "24", "+2")
+                col2.metric("Active Reports", "3", "1 New")
+            col3.metric("System Status", "Healthy")
 
-        except Exception as e:
-            # print(e)
-            col1.metric("Total chats", "24", "+2")
-            col2.metric("Active Reports", "3", "1 New")
-        col3.metric("System Status", "Healthy")
+        if chosen_id == "3":
+            st.subheader("Raw Data View")
+            with st.expander("View Raw JSON Payload"):
+                st.json(st.user)
+                
+            st.subheader("Logout")
+            if st.button("Logout"):
+                logout.render()
 
-    with tab3:
-        st.subheader("Raw Data View")
-        with st.expander("View Raw JSON Payload"):
-            st.json(st.user)
-        
-        # Display the toggle button in the sidebar or main body
-        # button_label = ("🌜 Switch to Dark Mode" if st.session_state.theme_state == "light" else "🌞 Switch to Light Mode")
-        # st.button(button_label, on_click=change_theme)
+            # Display the toggle button in the sidebar or main body
+            # button_label = ("🌜 Switch to Dark Mode" if st.session_state.theme_state == "light" else "🌞 Switch to Light Mode")
+            # st.button(button_label, on_click=change_theme)
 
 
 # --- 4. Execution ---

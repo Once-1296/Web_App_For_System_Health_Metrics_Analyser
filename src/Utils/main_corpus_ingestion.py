@@ -6,7 +6,7 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 
-from rag_config import (
+from src.Utils.rag_config import (
     ARCH_WIKI_DIR,
     CHROMA_DIR,
     UBUNTU_WIKI_DIR,

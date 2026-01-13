@@ -12,7 +12,7 @@ sentence-transformers
 streamlit
 supabase
 typer-slim
-uvloop
 watchfiles
 streamlit-chat
-streamlit_option_menu
+streamlit-option-menu
+extra_streamlit_components

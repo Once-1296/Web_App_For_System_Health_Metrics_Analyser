@@ -1,5 +1,5 @@
 # head_query.py
-from main_corpus_retrieval import retrieve_main_corpus
+from src.Utils.main_corpus_retrieval import retrieve_main_corpus
 
 def gather_context(query: str):
     main_docs = retrieve_main_corpus(query)

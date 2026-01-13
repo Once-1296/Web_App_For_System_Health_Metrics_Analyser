@@ -34,10 +34,10 @@ def render():
                 "font-size": "15px",
                 "text-align": "left",
                 "margin": "5px", # Small margin between items
-                "--hover-color": "#e66c38"
+                "--hover-color": "#00d4ff"
             },
             "nav-link-selected": {
-                "background-color": "#e66c38", # Added background color for clearer selection
+                "background-color": "#00d4ff", # Added background color for clearer selection
                 "color": "white"
             },
         }

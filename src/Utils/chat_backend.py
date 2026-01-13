@@ -4,10 +4,10 @@ from typing import List, Tuple, Optional, Dict, Any
 from datetime import datetime
 from supabase import create_client
 from supabase import Client
-from supabase_config import url, key
+from src.Utils.supabase_config import url, key
 from langchain_groq import ChatGroq
-from rag_app import answer_query
-from rag_config import SUMMARY_MODEL, GROQ_API_KEY
+from src.Utils.rag_app import answer_query
+from src.Utils.rag_config import SUMMARY_MODEL, GROQ_API_KEY
 
 def _get_supabase_client() -> Client:
     if not url or not key:
