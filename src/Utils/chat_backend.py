@@ -86,6 +86,9 @@ def update_chat() -> dict:
     except Exception as e:
         return {"error" : e}
 
+def delete_chat(chat_id_list: List[str]):
+    # Alvin's Part here.
+    pass
 
 def summarize_and_meta(
     messages: List[str], 

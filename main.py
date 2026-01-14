@@ -16,6 +16,9 @@ if not st.user.is_logged_in:
 # Load past chats if new session
 if not "current_chat_id" in st.session_state:
     load_past_chats(st.user.get("email", ""))
+    
+if "switch_page_from_history" not in st.session_state:
+    st.session_state.setdefault("switch_page_from_history",False)
 
 # Here will be a new navigation sidebar 
 #     1. Dashboard, 
@@ -27,28 +30,27 @@ picture = st.user.get("picture", None)
 if picture:
     st.logo(picture)
 
-
 dashboard_page = st.Page(
-    "src\Pages\dashboard.py",
+    page="src/Pages/dashboard.py",
     title="Dashboard",
     icon=":material/dashboard:",
     default=True
 )
 
 chat_page = st.Page(
-    "src\Pages\chat_frontend.py",
+    page="src/Pages/chat_frontend.py",
     title="Chat",
     icon=":material/chat:"
 )
 
 history_page = st.Page(
-    "src\Pages\chat_history.py",
+    page="src/Pages/chat_history.py",
     title="History",
     icon=":material/history:"
 )
 
 loc_app_doc_page = st.Page(
-    "src\Pages\loc_app_doc.py",
+    page="src/Pages/loc_app_doc.py",
     title="Local App Guide",
     icon=":material/download:"
 )
