@@ -1,7 +1,8 @@
 import streamlit as st
 import extra_streamlit_components as stx
 from streamlit_option_menu import option_menu
-from src.Utils.chat_backend import delete_chat
+from src.Utils.chat_backend import manage_deletes
+from src.Utils.chat_backend import load_past_chats as big_refresh
 
 def load_past_chats():
     details = []
@@ -86,7 +87,8 @@ def delete_chat():
             st.session_state[f"delete_{cid}"] = delete_all
         st.session_state.prev_delete_all = delete_all
 
-    selected_chat_ids = []
+    st.session_state.setdefault("selected_chat_ids",[])
+    st.session_state.selected_chat_ids=[]
 
     # 4. Render child checkboxes
     for i, (cid, title) in enumerate(remaining_chats):
@@ -95,16 +97,23 @@ def delete_chat():
             key=f"delete_{cid}"
         )
         if checked:
-            selected_chat_ids.append(cid)
+            st.session_state.selected_chat_ids.append(cid)
 
     # 5. Action button
-    if selected_chat_ids:
-        if st.button(f"Delete {len(selected_chat_ids)} Selected Chats", type="primary"):
-            delete_chat()
-            st.success(f"Deleted IDs: {selected_chat_ids}")
+    if st.session_state.selected_chat_ids:
+        if st.button(f"Delete {len(st.session_state.selected_chat_ids)} Selected Chats", type="primary"):
+            manage_deletes()
+            st.toast(f"Deleted IDs: {st.session_state.selected_chat_ids}", icon='✅')
+            st.rerun()
 
 
 def render():
+    if "history_dirty" in st.session_state:
+        if st.session_state.history_dirty:
+            st.session_state.history_dirty = False
+            print("1")
+            # big_refresh(st.user.get("email",""))
+
     chosen_id = stx.tab_bar(data=[
             stx.TabBarItemData(id=1, title="History", description="Chat History"),
             stx.TabBarItemData(id=2, title="Delete", description="Delete Chat History")

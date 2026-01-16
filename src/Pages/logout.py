@@ -10,7 +10,7 @@ def render():
     with col2:
         if st.button("Cancel", use_container_width=True):
             st.session_state.confirm_logout = False
-            st.switch_page("dashboard.py")
+            st.switch_page("src/Pages/dashboard.py")
                     
 if __name__ == "__main__":
     render()

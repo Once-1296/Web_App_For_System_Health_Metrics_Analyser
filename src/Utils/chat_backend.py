@@ -16,13 +16,13 @@ def _get_supabase_client() -> Client:
 
 def load_past_chats(email:str):
     st.session_state.setdefault("chat_id",{})
+    st.session_state.chat_id = {}
     if email is None:
         return {"error" : "No email given"}
     sb = _get_supabase_client()
     resp = (
         sb.table("user_chat_nums").select("chat_id").eq("email",email).execute()
     )
-    st.session_state.setdefault("chat_id",{})
     try:
         chat_ids = [entry["chat_id"] for entry in resp.data]
     except Exception as e:
@@ -42,6 +42,7 @@ def load_past_chats(email:str):
     st.session_state.setdefault("current_chat_id",new_id)
     # system report count
     st.session_state.setdefault("report_times",[])
+    st.session_state.report_times = []
     report_timings = (
         sb.table("user_system_reports").select("created_at").eq("user_email",email).execute()
     )
@@ -82,13 +83,24 @@ def update_chat() -> dict:
             return {"error" : resp1.error}
         if "error" in resp2:
             return {"error" : resp2.error}
+        st.session_state.history_dirty = True
         return {"message" :  "Success!"}
     except Exception as e:
         return {"error" : e}
 
-def delete_chat(chat_id_list: List[str]):
+def manage_deletes():
     # Alvin's Part here.
-    pass
+    try:
+        sb = _get_supabase_client()
+        email = st.user.get("email","")
+        for sid in st.session_state.selected_chat_ids:
+            st.session_state.chat_id.pop(sid,None)
+            d1 = ( sb.table("all_chats").delete().eq("chat_id",sid).eq("email",email).execute() )
+            d2 = ( sb.table("user_chat_nums").delete().eq("chat_id",sid).eq("email",email).execute() )
+        st.session_state.history_dirty = True
+        
+    except Exception as e:
+        pass
 
 def summarize_and_meta(
     messages: List[str], 

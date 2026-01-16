@@ -8,6 +8,11 @@ st.set_page_config(
     initial_sidebar_state="auto",
 )
 
+# history checkup
+if not "history_dirty" in st.session_state:
+    st.session_state.setdefault("history_dirty", False)
+
+
 # auth checkup
 if not st.user.is_logged_in:
     auth.render()
