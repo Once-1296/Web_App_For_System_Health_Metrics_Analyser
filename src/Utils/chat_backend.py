@@ -93,10 +93,16 @@ def manage_deletes():
     try:
         sb = _get_supabase_client()
         email = st.user.get("email","")
+        cid = st.session_state.current_chat_id
+        flag = False
+        if cid in st.session_state.selected_chat_ids:
+            flag = True
         for sid in st.session_state.selected_chat_ids:
             st.session_state.chat_id.pop(sid,None)
             d1 = ( sb.table("all_chats").delete().eq("chat_id",sid).eq("email",email).execute() )
             d2 = ( sb.table("user_chat_nums").delete().eq("chat_id",sid).eq("email",email).execute() )
+        if flag:
+            on_btn_click()
         st.session_state.history_dirty = True
         
     except Exception as e:
@@ -202,7 +208,7 @@ def on_input_change():
         print(f"warning : {response['warning']}")
     else:
         pass
-        print(f"Success !")
+        # print(f"Success !")
     # Clear the input box after sending
     st.session_state.user_input = ""
 

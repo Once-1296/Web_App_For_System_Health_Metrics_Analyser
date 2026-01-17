@@ -68,11 +68,15 @@ def delete_chat():
     details = []
     for chat_id, chat in st.session_state.chat_id.items():
         if chat["title"]:
+            # print(chat["title"])
             details.append((chat_id, chat["title"]))
 
     details = details[::-1]
-    remaining_chats = details[1:]
-
+    if len(st.session_state.chat_id[details[0][0]]["user_messages"]) == 0:
+        remaining_chats = details[1:]
+    else:
+        remaining_chats = details[:]
+    # print(remaining_chats)
     st.write("### Manage Chats")
 
     # 2. Master checkbox
@@ -108,11 +112,6 @@ def delete_chat():
 
 
 def render():
-    if "history_dirty" in st.session_state:
-        if st.session_state.history_dirty:
-            st.session_state.history_dirty = False
-            print("1")
-            # big_refresh(st.user.get("email",""))
 
     chosen_id = stx.tab_bar(data=[
             stx.TabBarItemData(id=1, title="History", description="Chat History"),
