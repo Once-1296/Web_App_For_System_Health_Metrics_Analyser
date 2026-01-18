@@ -199,11 +199,11 @@ def get_mock_activity_data():
     # If no timestamps available, return a 7-day zero/ random sample so chart shows something
     if not user_report_times:
         # print("No report times found in session state.")
-        dates = pd.date_range(end=pd.Timestamp.utcnow().normalize(), periods=7)
-        counts = np.random.randint(0, 6, size=len(dates))
-        df = pd.DataFrame({"reports": counts}, index=dates)
-        df.index.name = "date"
-        return df
+        # dates = pd.date_range(end=pd.Timestamp.utcnow().normalize(), periods=7)
+        # counts = np.random.randint(0, 6, size=len(dates))
+        # df = pd.DataFrame({"reports": counts}, index=dates)
+        # df.index.name = "date"
+        return {}
 
     try:
         # Parse timestamps robustly into UTC datetimes
@@ -330,7 +330,7 @@ def render():
                 col2.metric("Active Reports", num_of_reports, f"{count_new} Last 7 Days")
 
             except Exception as e:
-                # print(e)
+                print(e)
                 col1.metric("Total chats", "24", "+2")
                 col2.metric("Active Reports", "3", "1 New")
             col3.metric("System Status", "Healthy")

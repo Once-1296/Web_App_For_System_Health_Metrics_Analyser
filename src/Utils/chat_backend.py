@@ -227,8 +227,8 @@ def on_btn_click():
     except Exception as e:
         st.warning(f"Failed to save chat before clearing: {e}")
 
-    last_id = max(st.session_state.chat_id)
-    if len(st.session_state.chat_id[last_id]["user_messages"]) == 0:
+    last_id = max(st.session_state.chat_id) if len(st.session_state.chat_id) else 0
+    if len(st.session_state.chat_id) and len(st.session_state.chat_id[last_id]["user_messages"]) == 0:
         st.session_state.current_chat_id = last_id
     else:
         st.session_state.current_chat_id = last_id + 1

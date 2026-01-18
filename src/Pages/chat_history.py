@@ -2,7 +2,7 @@ import streamlit as st
 import extra_streamlit_components as stx
 from streamlit_option_menu import option_menu
 from src.Utils.chat_backend import manage_deletes
-from src.Utils.chat_backend import load_past_chats as big_refresh
+from src.Utils.chat_backend import load_past_chats as big_refresh, on_btn_click as create_empty
 
 def load_past_chats():
     details = []
@@ -10,7 +10,8 @@ def load_past_chats():
         if len(chat["title"]) == 0:
             chat["title"] = "New Chat"
         details.append((chat_id, chat["title"]))
-    
+    if not details:
+        create_empty()
     details = details[::-1]
     default_index = next(
         i for i, (cid, _) in enumerate(details)
@@ -72,7 +73,7 @@ def delete_chat():
             details.append((chat_id, chat["title"]))
 
     details = details[::-1]
-    if len(st.session_state.chat_id[details[0][0]]["user_messages"]) == 0:
+    if details and len(st.session_state.chat_id[details[0][0]]["user_messages"]) == 0:
         remaining_chats = details[1:]
     else:
         remaining_chats = details[:]

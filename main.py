@@ -28,9 +28,18 @@ if "switch_page_from_history" not in st.session_state:
 #     3. History
 #     4. Logout
 
-picture = st.user.get("picture", None)
+import requests
+from io import BytesIO
+
+picture = st.user.get("picture")
+
 if picture:
-    st.logo(picture)
+    try:
+        r = requests.get(picture, timeout=5)
+        if r.ok:
+            st.logo(BytesIO(r.content), size="large")
+    except Exception:
+        pass
 
 dashboard_page = st.Page(
     page="src/Pages/dashboard.py",
