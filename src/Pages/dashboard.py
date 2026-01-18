@@ -311,7 +311,8 @@ def render():
             col1, col2, col3 = st.columns(3)
             try:
                 num_of_chats = len(st.session_state.chat_id) 
-                sign = "+1" if len(st.session_state.chat_id[num_of_chats]["user_messages"])==0 else "+0"
+                last_id = max(st.session_state.chat_id) if len(st.session_state.chat_id) else -1
+                sign = "+1" if last_id != -1 and len(st.session_state.chat_id[num_of_chats]["user_messages"])==0 else "+0"
                 # print(len(st.session_state.chat_id[num_of_chats]["user_messages"]))
                 col1.metric("Total chats", num_of_chats,sign)
                 num_of_reports = len(st.session_state.report_times)
@@ -331,8 +332,8 @@ def render():
 
             except Exception as e:
                 print(e)
-                col1.metric("Total chats", "24", "+2")
-                col2.metric("Active Reports", "3", "1 New")
+                col1.metric("Total chats", "0", "+0")
+                col2.metric("Active Reports", "0", "0 New")
             col3.metric("System Status", "Healthy")
 
         if chosen_id == "3":
