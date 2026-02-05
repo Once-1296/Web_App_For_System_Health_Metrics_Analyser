@@ -5,14 +5,14 @@ from src.Utils.supabase_config import url, key
 import plotly.express as px
 import plotly.graph_objects as go
 import statistics as stats
+import extra_streamlit_components as stx
 
 st.set_page_config(
     layout="wide",
     initial_sidebar_state="auto",
 )
 
-# --- Helper Functions ---
-
+# Graph-Making Functions
 def create_line_chart(y_values, timestamps, label, color, is_aggregate=False):
     """Generates a styled line chart for samples or aggregates."""
     max_val = max(y_values) if len(y_values) > 0 else 100
@@ -35,6 +35,15 @@ def create_line_chart(y_values, timestamps, label, color, is_aggregate=False):
     )
     return fig
 
+
+def create_disk_pie(used, free, title):
+    fig = px.pie(names=["Used", "Free"], values=[used, free], title=title,
+                    color_discrete_map={"Used": "#ef553b", "Free": "#00cc96"}, hole=0.4)
+    fig.update_layout(showlegend=False, margin=dict(l=10, r=10, t=40, b=10), height=220)
+    return fig
+
+
+# Data-Fetching Functions
 def fetch_report_data(email):
     sb = create_client(url, key)
     try:
@@ -73,9 +82,46 @@ def fetch_report_data(email):
         # Catching connection errors or table permission issues
         st.error(f"Supabase fetching error: {e}")
         return None, None
+    
+
+def fetch_report_summary(email):
+    sb = create_client(url, key)
+    try:
+        resp = (
+            sb.table("user_system_reports")
+            .select("summary")
+            .eq("user_email", email)
+            .execute()
+        )
+        
+        # Check if the query returned any rows
+        if not resp.data or len(resp.data) == 0:
+            return None, None
+
+        record = resp.data[-1]
+        # Safely access the nested JSON structure
+        summary = record.get("summary")
+        if not summary:
+            st.warning("The record exists, but 'summary' is empty.")
+            return None, None
+
+        # Extracting specific keys with try-except to handle structural changes
+        try:
+            forecast_samples = summary.get('forecast_projection')
+            peak_period = summary.get('peak_active_period')
+            
+            return forecast_samples, peak_period
+
+        except Exception as e:
+            st.error(f"Error parsing JSON structure inside 'raw_data': {e}")
+            return None, None
+
+    except Exception as e:
+        # Catching connection errors or table permission issues
+        st.error(f"Supabase fetching error: {e}")
+        return None, None
 
 # --- Main Rendering Logic ---
-
 def render_charts(samples, aggregates):
     # Data Prep: Samples
     df_s = pd.DataFrame(samples)
@@ -155,12 +201,6 @@ def render_charts(samples, aggregates):
         disk_used = [e['disk']['used_gb'] for e in samples]
         disk_total = [e['disk']['total_gb'] for e in samples]
         disk_free = [t-u for t, u in zip(disk_total, disk_used)]
-        
-        def create_disk_pie(used, free, title):
-            fig = px.pie(names=["Used", "Free"], values=[used, free], title=title,
-                            color_discrete_map={"Used": "#ef553b", "Free": "#00cc96"}, hole=0.4)
-            fig.update_layout(showlegend=False, margin=dict(l=10, r=10, t=40, b=10), height=220)
-            return fig
 
         with c1: st.plotly_chart(create_disk_pie(disk_used[0], disk_free[0], "Start"), width='stretch', key ="9")
         with c2: st.plotly_chart(create_disk_pie(disk_used[len(disk_used)//2], disk_free[len(disk_used)//2], "Mid"), width='stretch', key ="10")
@@ -213,43 +253,7 @@ def render_charts(samples, aggregates):
         durations = [e['window']['duration_sec'] for e in aggregates]
         st.markdown(f"**Report covers {len(aggregates)} aggregation windows. Average window duration: {sum(durations)/len(durations):.2f}s**")
 
-def fetch_report_summary(email):
-    sb = create_client(url, key)
-    try:
-        resp = (
-            sb.table("user_system_reports")
-            .select("summary")
-            .eq("user_email", email)
-            .execute()
-        )
-        
-        # Check if the query returned any rows
-        if not resp.data or len(resp.data) == 0:
-            return None, None
 
-        record = resp.data[-1]
-        # Safely access the nested JSON structure
-        summary = record.get("summary")
-        if not summary:
-            st.warning("The record exists, but 'summary' is empty.")
-            return None, None
-
-        # Extracting specific keys with try-except to handle structural changes
-        try:
-            forecast_samples = summary.get('forecast_projection')
-            peak_period = summary.get('peak_active_period')
-            
-            return forecast_samples, peak_period
-
-        except Exception as e:
-            st.error(f"Error parsing JSON structure inside 'raw_data': {e}")
-            return None, None
-
-    except Exception as e:
-        # Catching connection errors or table permission issues
-        st.error(f"Supabase fetching error: {e}")
-        return None, None
-    
 def render_forecast(samples):
     # Data Prep: Samples
     df_s = pd.DataFrame(samples)
@@ -297,17 +301,11 @@ def render_forecast(samples):
     # 3. Disk Snapshots & Aggregates
     with st.container(border=True):
         st.subheader("💾 Storage Analysis")
-        c1, c2, c3, c4 = st.columns([1, 1, 1, 2])
+        c1, c2, c3 = st.columns(3)
         
         disk_used = [e['disk']['used_gb'] for e in samples]
         disk_total = [e['disk']['total_gb'] for e in samples]
-        disk_free = [t-u for t, u in zip(disk_total, disk_used)]
-        
-        def create_disk_pie(used, free, title):
-            fig = px.pie(names=["Used", "Free"], values=[used, free], title=title,
-                            color_discrete_map={"Used": "#ef553b", "Free": "#00cc96"}, hole=0.4)
-            fig.update_layout(showlegend=False, margin=dict(l=10, r=10, t=40, b=10), height=220)
-            return fig
+        disk_free = [t-u for t, u in zip(disk_total, disk_used)]  
 
         with c1: st.plotly_chart(create_disk_pie(disk_used[0], disk_free[0], "Start"), width='stretch', key ="18")
         with c2: st.plotly_chart(create_disk_pie(disk_used[len(disk_used)//2], disk_free[len(disk_used)//2], "Mid"), width='stretch', key ="19")
@@ -331,26 +329,38 @@ def render_forecast(samples):
     
 
 def render_charts_summary(peak_period):
-    processes = peak_period['top_processes'] # table
-    st.dataframe(processes)
-    top_aggregates = peak_period['top_aggregate'] 
-    cpu_stats = top_aggregates['cpu'] # bar chart
-    st.dataframe(cpu_stats)
-    mem_percent = top_aggregates['memory_avg_percent'] # pie
-    disk_percent = top_aggregates['disk_avg_percent'] # pie
-    col1, col2 = st.columns([1, 1])
+    # Top processes in summary.
+    with st.container(border=True):
+        st.subheader("Top 5 Processes")
+        top_processes = peak_period['top_processes'] # Table
+        st.dataframe(top_processes, hide_index=True, selection_mode="multi-row")
     
-    def create_disk_pie(used, free, title):
-        fig = px.pie(names=["Used", "Free"], values=[used, free], title=title,
-                        color_discrete_map={"Used": "#ef553b", "Free": "#00cc96"}, hole=0.4)
-        fig.update_layout(showlegend=False, margin=dict(l=10, r=10, t=40, b=10), height=220)
-        return fig
+    # Top Aggregates in Summary.
+    top_aggregates = peak_period['top_aggregate']
+    
+    with st.container(border=True):
+        mem_percent = top_aggregates['memory_avg_percent'] # pie
+        disk_percent = top_aggregates['disk_avg_percent'] # pie
+        col1, col2 = st.columns(2)
+        
+        def create_disk_pie(used, free, title):
+            fig = px.pie(names=["Used", "Free"], values=[used, free], title=title,
+                            color_discrete_map={"Used": "#ef553b", "Free": "#00cc96"}, hole=0.4)
+            fig.update_layout(showlegend=False, margin=dict(l=10, r=10, t=40, b=10), height=220)
+            return fig
 
-    with col1: st.plotly_chart(create_disk_pie(mem_percent, 100 - mem_percent, "Memory"), width='stretch', key ="1")
-    with col2: st.plotly_chart(create_disk_pie(disk_percent, 100 - disk_percent, "Disk"), width='stretch', key ="2")
-    
-    network_stats = top_aggregates['network_delta']
-    st.dataframe(network_stats)
+        with col1: st.plotly_chart(create_disk_pie(mem_percent, 100 - mem_percent, "Memory"), width='stretch', key ="1")
+        with col2: st.plotly_chart(create_disk_pie(disk_percent, 100 - disk_percent, "Disk"), width='stretch', key ="2")
+        
+    with st.container(border=True):
+        col1, col2 = st.columns(2)
+        with col1:
+            cpu_stats = top_aggregates['cpu'] # Table
+            st.dataframe(cpu_stats)
+        
+        with col2:
+            network_stats = top_aggregates['network_delta']
+            st.dataframe(network_stats)
 
     if top_aggregates['temps']['available']:
         temp_stats = top_aggregates['temps']['per_sensor'] # bar chart
@@ -366,14 +376,18 @@ def render():
     forecast_samples, peak_period = fetch_report_summary(email)
     
     if samples and aggregates and forecast_samples and peak_period:
-        tab1, tab2 = st.tabs(['Raw Data', 'Summary'])
-        with tab1:
+        chosen_id = stx.tab_bar(data=[
+            stx.TabBarItemData(id=1, title="Raw Data", description="Reports"),
+            stx.TabBarItemData(id=2, title="Summary", description="Reports Summary"),
+        ], default=1)
+        if chosen_id == "1":
             render_charts(samples, aggregates)
-        with tab2:
+        if chosen_id == "2":
             render_charts_summary(peak_period)
-            render_forecast(forecast_samples)
+            # render_forecast(forecast_samples)
     else:
         st.warning("No Data found.")    
+
 
 if __name__ == "__main__":
     render()
