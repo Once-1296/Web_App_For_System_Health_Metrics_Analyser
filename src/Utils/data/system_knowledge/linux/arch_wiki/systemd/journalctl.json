@@ -1,0 +1,47 @@
+{
+  "topic": "Using journalctl",
+  "category": "systemd",
+  "description": "Querying and analyzing logs stored by systemd-journald.",
+  "symptoms": [
+    "Need to inspect system logs",
+    "Service logs missing",
+    "Debugging crashes"
+  ],
+  "diagnosis": [
+    {
+      "step": "View all logs",
+      "command": "journalctl",
+      "notes": "Shows entire journal"
+    },
+    {
+      "step": "Filter by boot",
+      "command": "journalctl -b",
+      "notes": "Current boot logs only"
+    },
+    {
+      "step": "Filter by service",
+      "command": "journalctl -u <service>",
+      "notes": "Service-specific logs"
+    }
+  ],
+  "solutions": [
+    {
+      "fix": "Follow logs in real-time",
+      "command": "journalctl -f",
+      "notes": "Like tail -f"
+    },
+    {
+      "fix": "Limit logs by time",
+      "command": "journalctl --since \"1 hour ago\"",
+      "notes": "Useful for recent issues"
+    },
+    {
+      "fix": "Clear old logs",
+      "command": "journalctl --vacuum-time=7d",
+      "notes": "Frees disk space"
+    }
+  ],
+  "references": [
+    "https://wiki.archlinux.org/title/Systemd/Journal"
+  ]
+}
