@@ -5,6 +5,11 @@ from supabase import create_client, Client
 import src.Pages.logout as logout
 import extra_streamlit_components as stx
 
+st.set_page_config(
+    layout="centered",
+    initial_sidebar_state="auto",
+)
+
 # Assuming supabase_config is a local file or module you have
 try:
     from src.Utils.supabase_config import url, key
@@ -54,7 +59,7 @@ def fetch_report_content(report_id, supabase):
     """Fetches summary and conclusions for a specific report ID."""
     try:
         response = supabase.table("user_system_reports")\
-            .select("summary, conclusions")\
+            .select("conclusions")\
             .eq("id", report_id)\
             .execute()
         
@@ -62,15 +67,14 @@ def fetch_report_content(report_id, supabase):
             return None, "Report not found."
 
         record = response.data[0]
-        summary = record.get('summary', '') or ""
         conclusions = record.get('conclusions', '') or ""
 
         # Check if both are empty
-        if not summary.strip() and not conclusions.strip():
-            return None, "Both Summary and Conclusions are empty for this report."
+        if not conclusions.strip():
+            return None, "Conclusions are empty for this report."
 
         # Format the text file content
-        file_content = f"summary:\n{summary}\n\nconclusions:\n{conclusions}\n"
+        file_content = f"conclusions:\n{conclusions}\n"
         return file_content, None
 
     except Exception as e:
@@ -108,13 +112,13 @@ def open_download_modal(user_email):
 
     # 3. Action Buttons
     with col1:
-        if st.button("Cancel", use_container_width=True):
+        if st.button("Cancel", width='stretch'):
             st.rerun()
 
     with col2:
         # We use a standard button to trigger the fetch logic
         # If fetch is successful, we show the download button
-        if st.button("Prepare Download", type="primary", use_container_width=True):
+        if st.button("Prepare Download", type="primary", width='stretch'):
             content, error = fetch_report_content(selected_uuid, supabase)
             
             if error:
@@ -126,7 +130,7 @@ def open_download_modal(user_email):
                     data=content,
                     file_name=f"{selected_label.replace(' ', '_')}_System_Report.txt",
                     mime="text/plain",
-                    use_container_width=True
+                    width='stretch'
                 )
                 st.success("File ready for download!")
 
@@ -302,7 +306,6 @@ def render():
             st.write("Here is a summary of your activity this week.")
             
             chart_data = get_mock_activity_data()
-            # print(chart_data)
             
             # Interactive Bar Chart
             st.bar_chart(chart_data)
@@ -331,7 +334,6 @@ def render():
                 col2.metric("Active Reports", num_of_reports, f"{count_new} Last 7 Days")
 
             except Exception as e:
-                print(e)
                 col1.metric("Total chats", "0", "+0")
                 col2.metric("Active Reports", "0", "0 New")
             col3.metric("System Status", "Healthy")

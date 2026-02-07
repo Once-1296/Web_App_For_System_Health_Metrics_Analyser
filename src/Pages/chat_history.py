@@ -4,6 +4,11 @@ from streamlit_option_menu import option_menu
 from src.Utils.chat_backend import manage_deletes
 from src.Utils.chat_backend import load_past_chats as big_refresh, on_btn_click as create_empty
 
+st.set_page_config(
+    layout="centered",
+    initial_sidebar_state="auto",
+)
+
 def load_past_chats():
     details = []
     for chat_id, chat in st.session_state.chat_id.items():
