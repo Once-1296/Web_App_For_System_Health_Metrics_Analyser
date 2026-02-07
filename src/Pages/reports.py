@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import statistics as stats
 import extra_streamlit_components as stx
 from streamlit_option_menu import option_menu   
-
+import time
 import io
 from fpdf import FPDF
 import matplotlib.pyplot as plt
@@ -849,7 +849,9 @@ def render():
             render_charts_summary(forecast_samples, peak_period)
             
     else:
-        st.warning("No Data found.") 
+        st.image("assets/imgs/hand-drawn-no-data-concept_52683-127823.avif", width='stretch') 
+        time.sleep(3)
+        st.switch_page("src/Pages/dashboard.py")
 
 
 if __name__ == "__main__":
