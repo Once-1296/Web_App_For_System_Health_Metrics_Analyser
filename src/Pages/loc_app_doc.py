@@ -79,9 +79,15 @@ def render():
     if active.id == "overview":
         active.header.title("Project Overview")
         active.body.markdown("""
-The application is a comprehensive System Performance Monitor built with Python, designed to provide deep technical insights into hardware health and resource allocation. By utilizing the Psutil library, the app retrieves high-fidelity data from the CPU, memory, disks, and network interfaces. This data is then rendered through a professional-grade interface powered by PyQt, featuring dynamic tables and real-time updating graphs that visualize system fluctuations as they happen.
+        The application is a comprehensive System Performance Monitor built with Python, designed to provide deep technical insights into hardware health and resource allocation. By utilizing the Psutil library, the app retrieves high-fidelity data from the CPU, memory, disks, and network interfaces. This data is then rendered through a professional-grade interface powered by PyQt, featuring dynamic tables and real-time updating graphs that visualize system fluctuations as they happen.
 
-To ensure security and data integrity, the application currently employs Google OAuth 2.0 as the primary authorization method. While the dashboard provides immediate visual feedback through its live graphing system, the core analytical engine requires a 25-minute data collection window. This duration allows the application to aggregate enough telemetry to generate a statistically significant performance report, moving beyond simple real-time viewing to provide actionable, long-term system diagnostics.
+        To ensure security and data integrity, the application currently employs Google OAuth 2.0 as the primary authorization method. While the dashboard provides immediate visual feedback through its live graphing system, the core analytical engine requires a 25-minute data collection window. This duration allows the application to aggregate enough telemetry to generate a statistically significant performance report, moving beyond simple real-time viewing to provide actionable, long-term system diagnostics.
+
+        ---
+        **Quick Links:**
+        * 📥 [Releases page to install app](https://github.com/MohdHedayati/Local-app---system-health-metric-analyzer/releases/tag/v2.0)
+        * 📺 [View Demo Video Here](https://drive.google.com/file/d/1VBxCqLG-cHM9lLjSFF6cGrrf4kFEBD8W/view?usp=sharing)
+        * 📄 [In Depth Docs](https://mohdhedayati.github.io/System-Health-Metric-Analyser/)
         """)
 
     elif active.id == "usage":
