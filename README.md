@@ -19,7 +19,7 @@ The cloud-native command center for the System Health AI platform. This applicat
 ### 1. Installation
 ```bash
 # Clone the Web App branch
-git clone [https://github.com/Once-1296/Web_App_For_System_Health_Metrics_Analyser.git](https://github.com/Once-1296/Web_App_For_System_Health_Metrics_Analyser)
+git clone https://github.com/Once-1296/Web_App_For_System_Health_Metrics_Analyser.git
 
 # Create Virtual Environment
 python -m venv venv
