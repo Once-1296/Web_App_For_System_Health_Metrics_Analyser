@@ -1,0 +1,17 @@
+{
+  "id": "windows_cpu_troubleshooting",
+  "title": "High CPU Usage Troubleshooting",
+  "source": { "name": "Microsoft Community", "url": "https://answers.microsoft.com" },
+  "os": "windows",
+  "category": "cpu",
+  "content": {
+    "symptoms": ["System lag", "High fan speed", "100% CPU usage"],
+    "causes": ["Windows Update background tasks", "Antivirus scans", "Rogue processes"],
+    "diagnosis": ["Check Task Manager Details tab", "Use Resource Monitor"],
+    "solutions": ["Disable unnecessary startup apps", "Restart Windows Update service", "Scan for malware"],
+    "commands": [
+      "tasklist /v /fi \"STATUS eq RUNNING\"",
+      "resmon"
+    ]
+  }
+}

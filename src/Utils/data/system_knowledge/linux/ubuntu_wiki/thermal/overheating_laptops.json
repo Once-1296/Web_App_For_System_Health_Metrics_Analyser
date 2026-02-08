@@ -1,0 +1,39 @@
+{
+  "id": "ubuntu_laptop_overheating",
+  "title": "Laptop Overheating Issues",
+  "source": {
+    "name": "Ubuntu Community Help",
+    "url": "https://help.ubuntu.com/community/PowerManagement"
+  },
+  "os": "linux",
+  "distro": "ubuntu",
+  "category": "thermal",
+  "confidence": "high",
+  "tags": ["laptop", "thermal", "cooling"],
+  "content": {
+    "symptoms": [
+      "Laptop becomes hot to touch",
+      "Sudden shutdowns",
+      "Fan running constantly"
+    ],
+    "causes": [
+      "Dust-clogged vents",
+      "Degraded thermal paste",
+      "High background CPU or GPU load"
+    ],
+    "diagnosis": [
+      "Check CPU and system temperatures",
+      "Monitor fan and power behavior"
+    ],
+    "solutions": [
+      "Clean vents and cooling fans",
+      "Replace thermal paste",
+      "Reduce background load and tune power settings"
+    ],
+    "commands": [
+      "sensors",
+      "powertop"
+    ],
+    "notes": "Physical cleaning and proper airflow usually provide the most noticeable improvements on Ubuntu laptops."
+  }
+}

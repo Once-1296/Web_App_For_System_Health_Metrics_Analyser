@@ -1,0 +1,16 @@
+{
+  "id": "windows_service_management",
+  "title": "Service Control Manager",
+  "source": { "name": "Microsoft Learn", "url": "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-service" },
+  "os": "windows",
+  "category": "services",
+  "content": {
+    "tools": ["Services.msc", "Task Manager", "PowerShell"],
+    "diagnosis": ["Service failed to start", "Service causing high CPU"],
+    "commands": [
+      "services.msc",
+      "sc query \"wuauserv\"",
+      "Get-Service | Where-Object {$_.Status -eq 'Running'}"
+    ]
+  }
+}

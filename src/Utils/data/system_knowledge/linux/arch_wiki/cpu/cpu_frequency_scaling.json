@@ -1,0 +1,38 @@
+{
+  "id": "arch_cpu_frequency_scaling",
+  "title": "CPU Frequency Scaling on Linux",
+  "source": {
+    "name": "Arch Wiki",
+    "url": "https://wiki.archlinux.org/title/CPU_frequency_scaling"
+  },
+  "os": "linux",
+  "distro": "arch",
+  "category": "cpu",
+  "confidence": "high",
+  "tags": ["cpu", "performance", "frequency", "scaling"],
+  "content": {
+    "symptoms": [
+      "CPU stuck at low frequency",
+      "Poor system performance under load"
+    ],
+    "causes": [
+      "Power-saving CPU governor",
+      "Thermal throttling",
+      "Incorrect CPU scaling driver"
+    ],
+    "diagnosis": [
+      "Check current governor",
+      "Inspect available frequencies"
+    ],
+    "solutions": [
+      "Switch to performance governor",
+      "Install and configure cpupower",
+      "Verify correct scaling driver is loaded"
+    ],
+    "commands": [
+      "cpupower frequency-info",
+      "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor"
+    ],
+    "notes": "Laptop systems often prioritize power saving over performance."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "ubuntu_battery_health",
+  "title": "Laptop Battery Health",
+  "source": {
+    "name": "Ubuntu Documentation",
+    "url": "https://help.ubuntu.com"
+  },
+  "os": "linux",
+  "distro": "ubuntu",
+  "category": "battery",
+  "confidence": "high",
+  "tags": ["battery", "power", "laptop"],
+  "content": {
+    "symptoms": [
+      "Reduced battery life",
+      "Unexpected shutdowns",
+      "Battery not charging fully"
+    ],
+    "causes": [
+      "Battery wear",
+      "Power management misconfiguration"
+    ],
+    "diagnosis": [
+      "Check battery capacity using system tools",
+      "Inspect power supply and charging status"
+    ],
+    "solutions": [
+      "Calibrate battery",
+      "Replace old battery",
+      "Verify power management configuration"
+    ],
+    "commands": [
+      "upower -i /org/freedesktop/UPower/devices/battery_BAT0",
+      "acpi -V"
+    ],
+    "notes": "The acpi tool may need to be installed using: sudo apt install acpi. Battery degradation is normal over time."
+  }
+}

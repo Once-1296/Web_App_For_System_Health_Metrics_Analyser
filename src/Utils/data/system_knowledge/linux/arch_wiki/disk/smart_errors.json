@@ -1,0 +1,39 @@
+{
+  "id": "arch_disk_smart_errors",
+  "title": "Disk SMART Errors",
+  "source": {
+    "name": "Arch Wiki",
+    "url": "https://wiki.archlinux.org/title/S.M.A.R.T."
+  },
+  "os": "linux",
+  "distro": "arch",
+  "category": "disk",
+  "confidence": "high",
+  "tags": ["disk", "smart", "storage", "failure"],
+  "content": {
+    "symptoms": [
+      "Disk read/write errors",
+      "System freezes",
+      "SMART warnings"
+    ],
+    "causes": [
+      "Failing disk sectors",
+      "Aging hardware",
+      "Cable issues"
+    ],
+    "diagnosis": [
+      "Run SMART health check",
+      "Inspect reallocated sector count"
+    ],
+    "solutions": [
+      "Backup data immediately",
+      "Replace failing disk",
+      "Check SATA/NVMe connections"
+    ],
+    "commands": [
+      "smartctl -a /dev/sdX",
+      "smartctl -H /dev/sdX"
+    ],
+    "notes": "SMART errors often indicate imminent hardware failure."
+  }
+}

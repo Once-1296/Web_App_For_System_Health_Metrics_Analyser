@@ -1,0 +1,36 @@
+{
+  "id": "arch_disk_usage",
+  "title": "Disk Usage Monitoring",
+  "source": {
+    "name": "Arch Wiki",
+    "url": "https://wiki.archlinux.org/title/Df"
+  },
+  "os": "linux",
+  "distro": "arch",
+  "category": "disk",
+  "confidence": "high",
+  "tags": ["disk", "storage", "usage"],
+  "content": {
+    "symptoms": [
+      "Low disk space warnings",
+      "Applications failing to write files"
+    ],
+    "causes": [
+      "Large log files",
+      "Unused packages or caches"
+    ],
+    "diagnosis": [
+      "Check filesystem usage",
+      "Identify large directories"
+    ],
+    "solutions": [
+      "Clean package cache",
+      "Remove unnecessary files"
+    ],
+    "commands": [
+      "df -h",
+      "du -sh /*"
+    ],
+    "notes": "Always verify what is being deleted."
+  }
+}

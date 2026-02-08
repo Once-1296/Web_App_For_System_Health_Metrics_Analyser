@@ -1,0 +1,15 @@
+{
+  "id": "windows_battery_optimization",
+  "title": "Battery Optimization & Saver",
+  "source": { "name": "Microsoft Support", "url": "https://support.microsoft.com/windows" },
+  "os": "windows",
+  "category": "battery",
+  "content": {
+    "symptoms": ["Background apps draining power", "High brightness reducing runtime"],
+    "solutions": ["Enable Battery Saver mode", "Change Power Mode to 'Best Power Efficiency'", "Disable background apps"],
+    "commands": [
+      "powercfg /setdcvalueindex SCHEME_CURRENT SUB_NONE CONSERVATIVEIDLE 1"
+    ],
+    "notes": "Windows uses the 'Power Slider' in the taskbar to dynamically adjust performance vs. battery life."
+  }
+}
