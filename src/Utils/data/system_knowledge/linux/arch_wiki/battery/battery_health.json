@@ -1,0 +1,38 @@
+{
+  "id": "arch_battery_health",
+  "title": "Laptop Battery Health",
+  "source": {
+    "name": "Arch Wiki",
+    "url": "https://wiki.archlinux.org/title/Laptop"
+  },
+  "os": "linux",
+  "distro": "arch",
+  "category": "battery",
+  "confidence": "high",
+  "tags": ["battery", "power", "laptop"],
+  "content": {
+    "symptoms": [
+      "Reduced battery life",
+      "Unexpected shutdowns",
+      "Battery not charging fully"
+    ],
+    "causes": [
+      "Battery wear",
+      "Power management misconfiguration"
+    ],
+    "diagnosis": [
+      "Check battery capacity",
+      "Inspect power supply status"
+    ],
+    "solutions": [
+      "Calibrate battery",
+      "Replace old battery",
+      "Install power management tools"
+    ],
+    "commands": [
+      "upower -i /org/freedesktop/UPower/devices/battery_BAT0",
+      "acpi -V"
+    ],
+    "notes": "Battery degradation is normal over time."
+  }
+}

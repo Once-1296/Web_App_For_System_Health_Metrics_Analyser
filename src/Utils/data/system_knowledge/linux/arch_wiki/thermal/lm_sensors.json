@@ -1,0 +1,38 @@
+{
+  "id": "arch_lm_sensors",
+  "title": "Monitoring Temperatures with lm_sensors",
+  "source": {
+    "name": "Arch Wiki",
+    "url": "https://wiki.archlinux.org/title/Lm_sensors"
+  },
+  "os": "linux",
+  "distro": "arch",
+  "category": "thermal",
+  "confidence": "high",
+  "tags": ["thermal", "sensors", "monitoring"],
+  "content": {
+    "symptoms": [
+      "Unknown CPU or GPU temperatures",
+      "Overheating without visibility"
+    ],
+    "causes": [
+      "lm_sensors not configured",
+      "Missing kernel sensor modules"
+    ],
+    "diagnosis": [
+      "Detect available sensors",
+      "Read temperature values"
+    ],
+    "solutions": [
+      "Install lm_sensors",
+      "Run sensors-detect",
+      "Load recommended kernel modules"
+    ],
+    "commands": [
+      "pacman -S lm_sensors",
+      "sensors-detect",
+      "sensors"
+    ],
+    "notes": "Reboot may be required after loading new sensor modules."
+  }
+}

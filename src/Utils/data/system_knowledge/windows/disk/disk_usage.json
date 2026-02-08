@@ -1,0 +1,15 @@
+{
+  "id": "windows_disk_usage",
+  "title": "Disk Usage Analysis",
+  "source": { "name": "Microsoft Support", "url": "https://support.microsoft.com/windows" },
+  "os": "windows",
+  "category": "disk",
+  "content": {
+    "tools": ["Storage Sense", "File Explorer", "TreeSize (Third Party)"],
+    "commands": [
+      "cleanmgr /sagerun:1",
+      "fsutil volume diskfree C:"
+    ],
+    "solutions": ["Run Disk Cleanup", "Enable Storage Sense to auto-delete temp files", "Delete 'Windows.old' folder"]
+  }
+}
