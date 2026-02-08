@@ -51,10 +51,3 @@ key = "your-anon-key"
 client_id = "your-google-client-id"
 client_secret = "your-google-client-secret"
 ```
-
-**Push the changes:**
-```bash
-git add README.md LICENSE.md
-git commit -m "Update docs for Web Dashboard v2.0"
-git push origin Streamlit_Web_App_Deployment
-```
