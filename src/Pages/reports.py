@@ -574,7 +574,7 @@ def create_pdf(samples, aggregates, forecast_samples, peak_period):
     
     # Generate PDF
     pdf_output = io.BytesIO()
-    pdf_bytes = pdf.output(dest='S')
+    pdf_bytes = pdf.output(dest='S').encode('latin-1')
     pdf_output.write(pdf_bytes)
     pdf_output.seek(0)
     
